@@ -7,7 +7,7 @@ import pandas as pd
 def export_to_excel():
     try:
         # Kết nối tới PostgreSQL bằng PostgresHook
-        hook = PostgresHook(postgres_conn_id='atom_read_dw')
+        hook = PostgresHook(postgres_conn_id='mms_slave_db_conn')
         conn = hook.get_conn()
         cursor = conn.cursor()
 
