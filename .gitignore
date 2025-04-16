@@ -1,5 +1,3 @@
-.env
-env/
 # Byte-compiled / optimized / DLL files
 .DS_Store
 .git
@@ -7,6 +5,7 @@ env/
 # poetry.lock
 # pyproject.toml
 Logs/
+env/Lib/
 cx_Oracle-doc/
 __pycache__/
 *.py[cod]
@@ -154,3 +153,4 @@ cython_debug/
 #cache
 **/__pycache__/
 **/.pytest_cache/
+

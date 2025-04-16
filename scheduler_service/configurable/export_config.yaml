@@ -1,0 +1,113 @@
+export_template:
+  ACQ_POS_ACCOUNTING_REPORT:
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: "SFTP_ACQ_POS"
+    sftp_move: true
+    sheets:
+      ACQ_BANK:
+        is_header: true
+        sheet_title_name: "TỔNG HỢP THANH QUYẾT TOÁN THEO ACQ BANK"
+        sheet_name: "Tổng hợp ACQ"
+        is_format: true
+        column_mapping:
+          "NO": "STT"
+          "RPT_SESSION": "Phiên HT"
+          "ACQ_BANK": "ACQ BANK"
+          "NUM_OF_TXN": "Số lượng GD"
+          "TXN_AMT": "Số tiền GD"
+          "SHARE_FEE": "Phí chia sẻ ACQ Bank (đã VAT)"
+          "BVB_AMT": "Số tiền BVBank được báo có"
+      MERCHANT:
+        is_header: true
+        sheet_title_name: "TỔNG HỢP THANH QUYẾT TOÁN THEO ĐƠN VỊ CHẤP NHẬN THẺ"
+        sheet_name: "Tổng hợp DVCNT"
+        is_format: true
+        column_mapping:
+          "NO": "STT"
+          "RPT_SESSION": "Phiên HT"
+          "MERCHANT_NAME": "TÊN ĐVCNT"
+          "MID": "MID"
+          "TID": "TID"
+          "NUM_OF_TXN": "Số lượng GD"
+          "TXN_AMT": "Số tiền GD"
+          "DISCOUNT_AMT": "Phí chiết khấu (đã VAT)"
+          "MERCHANT_CREDIT_AMT": "Số tiền báo có ĐVCNT"
+          "ACCOUNT_NUMBER": "Số tài khoản báo có"
+          "ACCOUNT_NAME": "Tên tài khoản báo có"
+      ACCOUNTING:
+        is_header: true
+        sheet_title_name: "BÁO CÁO SỐ TIỀN HẠCH TOÁN DỰ KIẾN"
+        sheet_name: "Tổng hạch toán"
+        is_format: false
+        column_mapping:
+          "NO": "STT"
+          "RPT_SESSION": "Phiên HT"
+          "GROUP_NAME": "Nhóm"
+          "PRIORITY": "Thứ tự"
+          "DESCRIPTION": "Thuyết minh bút toán"
+          "POSTING_DATE": "Ngày hạch toán"
+          "DEBIT_BRANCH_CODE": "Mã đơn vị ghi nợ"
+          "DEBIT_ACCOUNT_NUMBER": "Tài khoản ghi nợ"
+          "DEBIT_ACCOUNT_NAME": "Tên tài khoản ghi nợ"
+          "CURRENCY": "Loại tiền"
+          "POSTING_AMT": "Số tiền"
+          "CREDIT_BRANCH_CODE": "Mã đơn vị ghi có"
+          "CREDIT_ACCOUNT_NUMBER": "Tài khoản ghi có"
+          "CREDIT_ACCOUNT_NAME": "Tên tài khoản ghi có"
+          "NARRATIVE": "Diễn giải"
+      FC_STATUS:
+        is_header: true
+        sheet_title_name: "KẾT QUẢ HẠCH TOÁN"
+        sheet_name: "Kết quả hạch toán"
+        is_format: false
+        column_mapping:
+          "PHIEN": "Phiên HT"
+          "NHOM HT": "Nhóm"
+          "THU TU HT": "Thứ tự"
+          "BatchID": "BatchID"
+          "NGAY HT": "Ngày hạch toán"
+          "BRANCH TK NO": "Mã đơn vị ghi nợ"
+          "TK NO": "Tài khoản ghi nợ"
+          "TEN TK NO": "Tên tài khoản ghi nợ"
+          "CURRENCY": "Loại tiền"
+          "SO TIEN": "Số tiền"
+          "BRANCH TK CO": "Mã đơn vị ghi có"
+          "SO TK CO": "Tài khoản ghi có"
+          "TEN TK CO": "Tên tài khoản ghi có"
+          "NARRATIVE": "Diễn giải"
+          "KET QUA": "Trạng thái hạch toán"
+          "FC_RESULTDESC": "Mô tả lỗi"
+          "SO LAN HT": "Số lần hạch toán"
+  ATOM_UPDATE_ACCOUNT_STATUS:
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: "SFTP_ACQ_POS"
+    sftp_move: false
+    sheets:
+      DATA:
+        is_header: true
+        sheet_title_name: ""
+        sheet_name: "DATA"
+        is_format: false
+        column_mapping:
+          "NO": "STT"
+          "TXN_ID": "TxnID"
+          "MID": "MID"
+          "TID": "TID"
+          "AUTH_ID_REPONSE": "Mã chuẩn chi"
+          "RETRIEVAL_REF_NO": "Số tham chiếu (F37)"
+          "REQUEST_AMOUNT": "Số tiền GD"
+          "POSTING_DATE": "Ngày báo có"
+  DEFAULT:
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: ""
+    sftp_move: false
+    sheets:
+      DATA:
+        is_header: true
+        sheet_title_name: ""
+        sheet_name: "DATA"
+        is_format: false
+        column_mapping: {}

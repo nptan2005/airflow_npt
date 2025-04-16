@@ -12,23 +12,31 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.session,airflow.api.auth.backend.basic_auth
+    AIRFLOW__WEBSERVER__WORKERS: 2  # Giảm số worker nếu tài nguyên hạn chế
+    AIRFLOW__WEBSERVER__WEB_SERVER_TIMEOUT: 300  # Tăng timeout cho Webserver
+    AIRFLOW__WEBSERVER__RATELIMIT_STORAGE_URL: redis://redis:6379/0
+    AIRFLOW__FAB__UPDATE_FAB_PERMS: True
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
-  # user: "${AIRFLOW_UID:-50000}:0"
+    - ./out_data:/opt/airflow/out_data
+    - ./sftp_dir:/opt/airflow/sftp_dir
   user: root
   depends_on:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
+networks:
+  airflow-network:
+    driver: bridge
 
 services:
   postgres:
@@ -39,6 +47,8 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+    networks:
+      - airflow-network
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -50,6 +60,8 @@ services:
     command: webserver
     ports:
       - 8080:8080
+    networks:
+      - airflow-network
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 10s
@@ -60,10 +72,19 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+  redis:
+    image: redis:latest
+    container_name: airflow-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    networks:
+      - airflow-network
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
       interval: 10s
@@ -138,6 +159,8 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     user: "0:0"
+    networks:
+      - airflow-network
     volumes:
       - .:/sources
 
@@ -153,6 +176,24 @@ services:
       - bash
       - -c
       - airflow
+  access-hot-proxy:
+    image: nginx:latest
+    container_name: access-hot-proxy
+    network_mode: host  # Đảm bảo sử dụng IP của server
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: always
+  python-service:
+    image: python:3.12-slim
+    container_name: python-service
+    volumes:
+      - ./scheduler_service:/app
+    working_dir: /app
+    # command: poetry run python main.py
+    environment:
+      LD_LIBRARY_PATH: "/opt/oracle/instantclient_21_1"
+    networks:
+      - airflow-network
 
 volumes:
   postgres-db-volume:
