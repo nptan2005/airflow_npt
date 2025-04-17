@@ -48,7 +48,7 @@ task_object = TaskFactory.create_from_sql_result(normalized_task_data)
 # Ví dụ sử dụng
 # send_email_ssl('noreply@bvbank.net.vn', 'NO_PASSWORD', 'tannp@bvbank.net.vn', 'Test Email', 'Hello from Python!')
 
-with EmailSender("EMAIL_DEFAULT", is_ssl=False, is_debug= False) as sender:
+with EmailSender() as sender:
     sender.header = 'self.task.task_name'
     sender.send(
         subject=f'[Tst]', 
