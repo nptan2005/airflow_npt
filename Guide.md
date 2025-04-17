@@ -29,6 +29,7 @@ sudo ufw allow from 172.26.0.0/16 to any port 5432
 netstat -tuln | grep 5432
 
 docker network prune
+airflow webserver -d
 
 -------------------------
 tat:

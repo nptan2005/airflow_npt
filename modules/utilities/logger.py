@@ -47,7 +47,8 @@ class Logger:
 
     def get_log_file_path(self,max_bytes = 2 * 1024 * 1024, backup_count = 5):
         """Tạo đường dẫn đến file log dựa trên file config."""
-        log_dir = '..' + os.path.sep + 'Logs'
+        # log_dir = '..' + os.path.sep + 'Logs'
+        log_dir = os.getenv('LOG_PATH')
         log_dir.mkdir(parents=True, exist_ok=True)  # Tạo thư mục nếu chưa tồn tại
         today = datetime.date.today().strftime("%Y%m%d")  # Lấy ngày hiện tại theo định dạng yyyymmdd
 

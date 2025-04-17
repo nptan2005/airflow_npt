@@ -163,7 +163,7 @@ class _AppConfigSingleton:
             raise
 
 # end class AppConfigSingleton
-app_config_path = os.getenv("CONFIG_PATH", "./config/config.yaml")
+app_config_path = os.getenv("CONFIG_PATH", "config/config.yaml")
 # app_config_path = os.path.join("configurable", "config.yaml")
 configuration = _AppConfigSingleton(app_config_path)
 
@@ -216,6 +216,6 @@ def load_config(config_file: str, config_class: BaseModel):
         config_data = yaml.safe_load(file)
     return config_class(**config_data)
 
-srv_config_file =  os.getenv("CONFIG_PATH", "./config/appconfig.yaml")
+srv_config_file =  os.getenv("CONFIG_PATH", "config/appconfig.yaml")
 # srv_config_file = os.path.join("configurable", "appconfig.yaml")
 app_service_config = load_config(srv_config_file, AppEnvConfig).get_env_config()

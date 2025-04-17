@@ -22,13 +22,13 @@ class EncryptionManager(BaseModel, _SingletonBase):
     """
     Manage Pwd encryption
     """
-    data_folder: str = Field(default=os.path.join("bin", "data"))
-    iv_folder: str = Field(default=os.path.join("bin", "iv"))
-    master_key_file:str = Field(default=os.path.join("bin", "key","master_key_ase.bin"))
+    data_folder: str = Field(default=os.path.join(os.getenv('BIN_PATH'), "data"))
+    iv_folder: str = Field(default=os.path.join(os.getenv('BIN_PATH'), "iv"))
+    master_key_file:str = Field(default=os.path.join(os.getenv('BIN_PATH'), "key","master_key_ase.bin"))
     master_key:bytes = Field(default_factory=bytes)
-    iv_master_key_file:str = Field(default=os.path.join("bin", "iv","master_key_iv_ase.bin"))
+    iv_master_key_file:str = Field(default=os.path.join(os.getenv('BIN_PATH'), "iv","master_key_iv_ase.bin"))
     iv_master_key:bytes = Field(default_factory=bytes)
-    key_file:str = Field(default=os.path.join("bin", "key","key_ase.bin"))
+    key_file:str = Field(default=os.path.join(os.getenv('BIN_PATH'), "key","key_ase.bin"))
     key:bytes = Field(default_factory=bytes)
     encryption_dict: Dict[str, bytes] = Field(default_factory=dict)
     iv_dict: Dict[str, bytes] = Field(default_factory=dict)

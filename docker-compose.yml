@@ -22,6 +22,12 @@ x-airflow-common:
     AIRFLOW__WEBSERVER__WEB_SERVER_TIMEOUT: 300  # Tăng timeout cho Webserver
     AIRFLOW__WEBSERVER__RATELIMIT_STORAGE_URL: redis://redis:6379/0
     AIRFLOW__FAB__UPDATE_FAB_PERMS: True
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+    AIRFLOW__CORE__PLUGINS_FOLDER: /opt/airflow/plugins
+    PYTHONPATH: /opt/airflow/plugins:/opt/airflow/dags:/opt/airflow/modules:/opt/airflow/config:/opt/airflow/scripts:$PYTHONPATH
+    CONFIG_PATH: /opt/airflow/config
+    LOG_PATH: /opt/airflow/logs
+    BIN_PATH: /opt/airflow/bin
     # AIRFLOW__DEBUG_PORT: 5678
   volumes:
     - ./dags:/opt/airflow/dags
@@ -31,6 +37,7 @@ x-airflow-common:
     - ./modules:/opt/airflow/modules
     - ./out_data:/opt/airflow/out_data
     - ./sftp_dir:/opt/airflow/sftp_dir
+    - ./bin:/opt/airflow/bin
   user: root
   depends_on:
     &airflow-common-depends-on
@@ -185,17 +192,6 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     restart: always
-  # python-service:
-  #   image: python:3.12-slim
-  #   container_name: python-service
-  #   volumes:
-  #     - ./scheduler_service:/app
-  #   working_dir: /app
-  #   # command: poetry run python main.py
-  #   environment:
-  #     LD_LIBRARY_PATH: "/opt/oracle/instantclient_21_1"
-  #   networks:
-  #     - airflow-network
 
 volumes:
   postgres-db-volume:

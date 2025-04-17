@@ -30,8 +30,10 @@ class _ProcedureConfig(BaseModel):
         super().__init__(**data)
 
 import os
-
-prc_config_path = os.path.join("configurable", "procedure_config.yaml")
+from dotenv import load_dotenv
+load_dotenv()
+prc_config_path = os.getenv("CONFIG_PATH", "config/procedure_config.yaml")
+# prc_config_path = os.path.join("configurable", "procedure_config.yaml")
 
 # if _validate_yaml(module_config_path) == True:
 prc_configuration = ConfigUtils.load_config(prc_config_path,_ProcedureConfig)
