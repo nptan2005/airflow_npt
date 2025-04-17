@@ -1,0 +1,13 @@
+{
+    "name": "Python: Docker Attach",
+    "type": "python",
+    "request": "attach",
+    "pathMappings": [
+        {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/opt/airflow"
+        }
+    ],
+    "port": 5678,
+    "host": "localhost"
+}

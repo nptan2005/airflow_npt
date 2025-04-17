@@ -1,5 +1,17 @@
 pandas
 numpy
+matplotlib
+cryptography
+ebcdic
+fonttools
+hexdump
+ipython
+pretty-html-table
+pyemv
+pyiso8583
+xlsxwriter
+# pathlib
+pydantic
 # psycopg2-binary
 psycopg2
 openpyxl

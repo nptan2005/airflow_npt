@@ -8,7 +8,7 @@ x-airflow-common:
     context: .
     dockerfile: ./airflow.Dockerfile
     args:
-      AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.2.3}
+      AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.5-python3.12}
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -22,11 +22,13 @@ x-airflow-common:
     AIRFLOW__WEBSERVER__WEB_SERVER_TIMEOUT: 300  # Tăng timeout cho Webserver
     AIRFLOW__WEBSERVER__RATELIMIT_STORAGE_URL: redis://redis:6379/0
     AIRFLOW__FAB__UPDATE_FAB_PERMS: True
+    # AIRFLOW__DEBUG_PORT: 5678
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
+    - ./modules:/opt/airflow/modules
     - ./out_data:/opt/airflow/out_data
     - ./sftp_dir:/opt/airflow/sftp_dir
   user: root
@@ -183,17 +185,17 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     restart: always
-  python-service:
-    image: python:3.12-slim
-    container_name: python-service
-    volumes:
-      - ./scheduler_service:/app
-    working_dir: /app
-    # command: poetry run python main.py
-    environment:
-      LD_LIBRARY_PATH: "/opt/oracle/instantclient_21_1"
-    networks:
-      - airflow-network
+  # python-service:
+  #   image: python:3.12-slim
+  #   container_name: python-service
+  #   volumes:
+  #     - ./scheduler_service:/app
+  #   working_dir: /app
+  #   # command: poetry run python main.py
+  #   environment:
+  #     LD_LIBRARY_PATH: "/opt/oracle/instantclient_21_1"
+  #   networks:
+  #     - airflow-network
 
 volumes:
   postgres-db-volume:

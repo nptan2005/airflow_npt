@@ -1,0 +1,18 @@
+procedures_template:
+  OUT_RESPONSE_CODE:
+    in_params: []
+      # - name: param1
+      #   type: VARCHAR2
+      #   value: value1
+      # - name: param2
+      #   type: NUMBER
+      #   value: 1234
+    out_params:
+      - name: o_rscode
+        type: VARCHAR2
+      - name: o_rsdesc
+        type: VARCHAR2
+    is_retry: true
+    conditions:
+      success_value: '00'
+      email_notify: true
