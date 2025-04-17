@@ -94,6 +94,7 @@ class _FilePath(BaseModel):
         self._post_init()
 
     def _post_init(self):
+        self.root = os.getenv("CONFIG_PATH", "./config")
         # Tạo full_path và file_content sau khi khởi tạo model
         if self.file is None:
             self.full_path = os.path.join(self.root, self.path)
@@ -163,8 +164,7 @@ class _AppConfigSingleton:
             raise
 
 # end class AppConfigSingleton
-app_config_path = os.getenv("CONFIG_PATH", "config/config.yaml")
-# app_config_path = os.path.join("configurable", "config.yaml")
+app_config_path = os.path.join(os.getenv("CONFIG_PATH", "./config"), "config.yaml")
 configuration = _AppConfigSingleton(app_config_path)
 
 
@@ -216,6 +216,5 @@ def load_config(config_file: str, config_class: BaseModel):
         config_data = yaml.safe_load(file)
     return config_class(**config_data)
 
-srv_config_file =  os.getenv("CONFIG_PATH", "config/appconfig.yaml")
-# srv_config_file = os.path.join("configurable", "appconfig.yaml")
+srv_config_file = os.path.join(os.getenv("CONFIG_PATH", "./config"), "appconfig.yaml")
 app_service_config = load_config(srv_config_file, AppEnvConfig).get_env_config()

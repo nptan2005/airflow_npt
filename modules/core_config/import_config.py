@@ -56,8 +56,8 @@ class _ImportConfig(BaseModel):
 import os
 from dotenv import load_dotenv
 load_dotenv()
-import_config_path = os.getenv("CONFIG_PATH", "config/import_config.yaml")
-# import_config_path = os.path.join("configurable", "import_config.yaml")
+
+import_config_path = os.path.join(os.getenv("CONFIG_PATH", "./config"), "import_config.yaml")
 
 import_configuration = ConfigUtils.load_config(import_config_path,_ImportConfig)
 

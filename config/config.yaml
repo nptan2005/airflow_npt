@@ -21,7 +21,7 @@ file_path:
     root: Archived
     path: Archived_SFTP
   EMAIL_TEMPLATE:
-    root: configurable
+    root: config
     path: email_template
     file: defaultTemplate.html
 email:

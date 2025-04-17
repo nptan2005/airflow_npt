@@ -40,8 +40,8 @@ class _ExportConfig(BaseModel):
 import os
 from dotenv import load_dotenv
 load_dotenv()
-export_config_path = os.getenv("CONFIG_PATH", "config/export_config.yaml")
-# export_config_path = os.path.join("configurable", "export_config.yaml")
+
+export_config_path = os.path.join(os.getenv("CONFIG_PATH", "./config"), "export_config.yaml")
 
 
 export_configuration = ConfigUtils.load_config(export_config_path,_ExportConfig)
