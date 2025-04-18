@@ -1,12 +1,12 @@
 file_path:
   FILE_IMPORT_DEFAULT:
-    root: Data
+    root: data
     path: Import_Data
   FILE_EXPORT_DEFAULT:
-    root: Data
+    root: data
     path: Export_Data
   EMAIL_ATTACH_DEFAULT:
-    root: Data
+    root: data
     path: Attachment_Data
   ARCHIVE_IMPORT:
     root: Archived

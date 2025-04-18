@@ -4,12 +4,12 @@ import openpyxl
 from openpyxl.styles import Font, Alignment
 from typing import Optional,Dict,List,Tuple
 import inspect
-from .dataConstant import DataConstant
-from core_config import export_configuration
-from utilities import Logger
+from pd_to_excel_plugin.export_constant import ExportConstant
+from pd_to_excel_plugin.export_config import export_configuration
+import logging
 
 
-class DataExport:
+class PdToFile:
     def __init__(self,export_data,
                  export_name,
                  file_name, 
@@ -19,7 +19,7 @@ class DataExport:
             self._template = export_configuration.export_template[template]
             self._file_type = self._template.file_extension
         else:
-            self._template = export_configuration.export_template[DataConstant.DEFAULT]
+            self._template = export_configuration.export_template[ExportConstant.DEFAULT]
             self._file_type = file_extension
 
         self._file_name = file_name
@@ -28,7 +28,7 @@ class DataExport:
         self._export_name = export_name
         self._is_successful = False
         self._note = ''
-        self.logger = Logger().logger
+        self.logger = logging
 
     def __enter__(self):
         return self
@@ -292,10 +292,10 @@ class DataExport:
 
     def _data_frame_export(self, data, file_format, file_path):
         export_functions = {
-            DataConstant.RPT_CSV_FILE_TYPE: lambda: data.to_csv(file_path, sep=self._sep, index=False, header=True, encoding='utf-8'),
-            DataConstant.RPT_TEXT_FILE_TYPE: lambda: data.to_csv(file_path, sep=self._sep, index=False, header=False, encoding='utf-8'),
-            DataConstant.RPT_EXCEL_FILE_TYPE: lambda: data.to_excel(file_path),
-            DataConstant.RPT_JSON_FILE_TYPE: lambda: data.to_json(file_path, orient='records', lines=True),
+            ExportConstant.RPT_CSV_FILE_TYPE: lambda: data.to_csv(file_path, sep=self._sep, index=False, header=True, encoding='utf-8'),
+            ExportConstant.RPT_TEXT_FILE_TYPE: lambda: data.to_csv(file_path, sep=self._sep, index=False, header=False, encoding='utf-8'),
+            ExportConstant.RPT_EXCEL_FILE_TYPE: lambda: data.to_excel(file_path),
+            ExportConstant.RPT_JSON_FILE_TYPE: lambda: data.to_json(file_path, orient='records', lines=True),
         }
         export_functions.get(file_format.lower(), lambda: data.to_csv(file_path, sep=self._sep, index=False, header=False, encoding='utf-8'))()
 
@@ -303,9 +303,9 @@ class DataExport:
     def to_file(self):
         """Export DataFrame to any file format."""
         try:
-            if self.file_type == DataConstant.RPT_EXCEL_FILE_TYPE:
+            if self.file_type == ExportConstant.RPT_EXCEL_FILE_TYPE:
                 self._export_to_excel()
-            elif self.file_type == DataConstant.RPT_CSV_FILE_TYPE:
+            elif self.file_type == ExportConstant.RPT_CSV_FILE_TYPE:
                 self._export_to_csv()
             else:
                 self._export_to_any_file()

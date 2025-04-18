@@ -1,24 +1,49 @@
-import yaml
+from typing import Dict,  Optional
+from pydantic import BaseModel, Field,field_validator
+import os
+from dotenv import load_dotenv
+from pd_to_excel_plugin.utils import load_config
 
-class ExportConfig:
-    def __init__(self, config_file):
-        self.config_file = config_file
-        self.config_data = None
 
-    def load_config(self):
-        """Load YAML configuration file."""
-        try:
-            with open(self.config_file, 'r', encoding='utf-8') as file:
-                self.config_data = yaml.safe_load(file)
-                return self.config_data
-        except Exception as e:
-            raise Exception(f"Lỗi khi đọc file config: {e}")
+class _SheetConfig(BaseModel):
+    is_header: bool = Field(default=True, description="Flag to indicate if header is present")
+    sheet_title_name: Optional[str] = Field("", description="Title of the sheet")
+    sheet_name: str = Field(default=None, description="Name of the sheet in Excel")
+    is_format: bool = Field(default=False, description="Flag to format")
+    column_mapping: Dict[str, str] = Field(default=None, description="Mapping between DataFrame columns and Excel columns")
 
-    def get_template(self, template_name):
-        """Lấy cấu hình template theo tên."""
-        if not self.config_data:
-            self.load_config()
-        template = self.config_data.get('export_template', {}).get(template_name, None)
-        if not template:
-            raise Exception(f"Template '{template_name}' không tồn tại trong file config.")
-        return template
+    @field_validator('is_header', 'is_format', mode='before')
+    def parse_bool(cls, v):
+        if isinstance(v, str):
+            return v.lower() in ['true', '1', 'yes']
+        return bool(v)
+
+class _ExportTemplate(BaseModel):
+    file_extension: str = "xlsx"
+    separate: str = "|"
+    sftp_conn: Optional[str] = Field(default=None)
+    sftp_move: bool = Field(default=True, description="Flag to move file after SFTP upload")
+    sheets: Dict[str, _SheetConfig] = Field(..., description="Dictionary of sheet configurations")
+
+    @field_validator('sftp_move',  mode='before')
+    def parse_bool(cls, v):
+        if isinstance(v, str):
+            return v.lower() in ['true', '1', 'yes']
+        return bool(v)
+
+class _ExportConfig(BaseModel):
+    export_template: Dict[str,_ExportTemplate]
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+
+# from pydantic import BaseModel
+
+
+
+load_dotenv()
+export_config_path = os.path.join(os.getenv("CONFIG_PATH", "./config"), "export_config.yaml")
+
+
+export_configuration = load_config(export_config_path,_ExportConfig)

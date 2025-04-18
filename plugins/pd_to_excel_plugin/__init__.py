@@ -1,6 +1,6 @@
 from airflow.plugins_manager import AirflowPlugin
-from pd_to_excel_plugin.excel_export_operator import ExcelExportOperator
+from pd_to_excel_plugin.export_operator import ExportOperator
 
-class ExcelExporterPlugin(AirflowPlugin):
-    name = "excel_exporter_plugin"
-    operators = [ExcelExportOperator]
+class ExporterPlugin(AirflowPlugin):
+    name = "exporter_plugin"
+    operators = [ExportOperator]

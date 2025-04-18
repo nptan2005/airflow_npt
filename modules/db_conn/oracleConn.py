@@ -240,7 +240,7 @@ class OracleConn(ConnBase):
             else:
                 return False
         except Exception  as e:
-            self.logger.exception(f'check_column_exist >>> with param: {param} is Error :{e}')
+            self.logger.exception(f'check_column_exist >>> with param: {params} is Error :{e}')
             self.close 
         return False
     #check_column_exist
@@ -264,7 +264,7 @@ class OracleConn(ConnBase):
             else:
                 return False
         except Exception  as e:
-            self.logger.exception(f'check_table_exist >>> with param: {param} is Error :{e}')
+            self.logger.exception(f'check_table_exist >>> with param: {params} is Error :{e}')
             self.close 
         return False
     #check_table_exist
@@ -434,7 +434,7 @@ class OracleConn(ConnBase):
                         record[key] = value
             self.cursor.executemany(sql, records)
         except Exception as e:
-            self.logger.exception(f"Error import data to database",e)
+            self.logger.exception(f"Error import data to database {e}")
         finally:
             self.commit
 

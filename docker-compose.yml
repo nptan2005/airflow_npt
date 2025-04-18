@@ -11,12 +11,13 @@ x-airflow-common:
       AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.5-python3.12}
   environment:
     &airflow-common-env
-    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    # AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false' 
     AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.session,airflow.api.auth.backend.basic_auth
     AIRFLOW__WEBSERVER__WORKERS: 2  # Giảm số worker nếu tài nguyên hạn chế
     AIRFLOW__WEBSERVER__WEB_SERVER_TIMEOUT: 300  # Tăng timeout cho Webserver
@@ -35,7 +36,7 @@ x-airflow-common:
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
     - ./modules:/opt/airflow/modules
-    - ./out_data:/opt/airflow/out_data
+    - ./data:/opt/airflow/data
     - ./sftp_dir:/opt/airflow/sftp_dir
     - ./bin:/opt/airflow/bin
   user: root
@@ -63,6 +64,19 @@ services:
       interval: 5s
       retries: 5
     restart: always
+  redis:
+    image: redis:latest
+    container_name: airflow-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - airflow-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
 
   airflow-webserver:
     <<: *airflow-common
@@ -80,14 +94,7 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
-        condition: service_completed_successfully
-  redis:
-    image: redis:latest
-    container_name: airflow-redis
-    ports:
-      - "6379:6379"
-    restart: always
-    
+        condition: service_completed_successfully    
 
   airflow-scheduler:
     <<: *airflow-common
@@ -104,6 +111,13 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+
+  airflow-worker:
+    <<: *airflow-common
+    command: celery worker
+    networks:
+      - airflow-network
+    restart: always
 
   airflow-init:
     <<: *airflow-common
@@ -192,6 +206,18 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     restart: always
-
+  flower:
+    <<: *airflow-common
+    command: celery flower
+    networks:
+      - airflow-network
+    ports:
+      - 5555:5555
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
 volumes:
   postgres-db-volume:
