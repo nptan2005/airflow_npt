@@ -1,3 +1,4 @@
+ARG AIRFLOW_UID=50000
 ARG AIRFLOW_IMAGE_NAME
 FROM ${AIRFLOW_IMAGE_NAME}
 
@@ -17,17 +18,50 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME=/home/jdk-11.0.2
+# ENV JAVA_HOME=/home/jdk-11.0.2
 
-ENV PATH="${JAVA_HOME}/bin/:${PATH}"
+# ENV PATH="${JAVA_HOME}/bin/:${PATH}"
 
-RUN DOWNLOAD_URL="https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz" \
-    && TMP_DIR="$(mktemp -d)" \
-    && curl -fL "${DOWNLOAD_URL}" --output "${TMP_DIR}/openjdk-11.0.2_linux-x64_bin.tar.gz" \
-    && mkdir -p "${JAVA_HOME}" \
-    && tar xzf "${TMP_DIR}/openjdk-11.0.2_linux-x64_bin.tar.gz" -C "${JAVA_HOME}" --strip-components=1 \
-    && rm -rf "${TMP_DIR}" \
-    && java --version
+# RUN DOWNLOAD_URL="https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz" \
+#     && TMP_DIR="$(mktemp -d)" \
+#     && curl -fL "${DOWNLOAD_URL}" --output "${TMP_DIR}/openjdk-11.0.2_linux-x64_bin.tar.gz" \
+#     && mkdir -p "${JAVA_HOME}" \
+#     && tar xzf "${TMP_DIR}/openjdk-11.0.2_linux-x64_bin.tar.gz" -C "${JAVA_HOME}" --strip-components=1 \
+#     && rm -rf "${TMP_DIR}" \
+#     && java --version
+
+USER root
+
+# Cài openjdk-11 từ nguồn bullseye (ổn định hơn bookworm trên ARM)
+# RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
+#     apt-get update && \
+#     apt-get install -y openjdk-11-jdk && \
+#     rm -rf /var/lib/apt/lists/*
+
+# ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
+# ENV PATH="$JAVA_HOME/bin:$PATH"
+
+# RUN java -version
+
+USER root
+
+# Thêm nguồn ổn định từ bullseye
+RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
+    apt-get update && \
+    if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        apt-get install -y openjdk-11-jdk && \
+        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 ; \
+    else \
+        apt-get install -y openjdk-11-jdk && \
+        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64 ; \
+    fi && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "JAVA_HOME=$JAVA_HOME" && \
+    java -version
+
+# Đặt JAVA_HOME mặc định (sẽ tương ứng nếu container build đúng)
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
+ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Thêm Oracle Instant Client
 USER root

@@ -4,6 +4,7 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
+  image: airflow-nptan:1.0.0
   build:
     context: .
     dockerfile: ./airflow.Dockerfile
@@ -21,6 +22,7 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.session,airflow.api.auth.backend.basic_auth
     AIRFLOW__WEBSERVER__WORKERS: 2  # Giảm số worker nếu tài nguyên hạn chế
     AIRFLOW__WEBSERVER__WEB_SERVER_TIMEOUT: 300  # Tăng timeout cho Webserver
+    AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
     AIRFLOW__WEBSERVER__RATELIMIT_STORAGE_URL: redis://redis:6379/0
     AIRFLOW__FAB__UPDATE_FAB_PERMS: True
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
@@ -51,6 +53,7 @@ networks:
 services:
   postgres:
     image: postgres:13
+    # container_name: airflow-postgres
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -66,7 +69,7 @@ services:
     restart: always
   redis:
     image: redis:latest
-    container_name: airflow-redis
+    # container_name: airflow-redis
     ports:
       - "6379:6379"
     networks:
@@ -80,6 +83,7 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
+    # container_name: airflow-webserver
     command: webserver
     ports:
       - 8080:8080
@@ -98,6 +102,7 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
+    container_name: airflow-scheduler
     command: scheduler
     networks:
       - airflow-network
@@ -114,6 +119,7 @@ services:
 
   airflow-worker:
     <<: *airflow-common
+    # container_name: airflow-worker
     command: celery worker
     networks:
       - airflow-network
@@ -121,6 +127,7 @@ services:
 
   airflow-init:
     <<: *airflow-common
+    # container_name: airflow-init
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -189,6 +196,7 @@ services:
 
   airflow-cli:
     <<: *airflow-common
+    # container_name: airflow-cli
     profiles:
       - debug
     environment:
@@ -199,15 +207,16 @@ services:
       - bash
       - -c
       - airflow
-  access-hot-proxy:
+  acess-host-proxy:
     image: nginx:latest
-    container_name: access-hot-proxy
+    # container_name: access-host-proxy
     network_mode: host  # Đảm bảo sử dụng IP của server
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     restart: always
   flower:
     <<: *airflow-common
+    # container_name: airflow-flower
     command: celery flower
     networks:
       - airflow-network
