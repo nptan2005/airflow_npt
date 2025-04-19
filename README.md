@@ -52,17 +52,13 @@ Airflow cho phép bạn định nghĩa các DAGs (Directed Acyclic Graphs) — m
 
 ## 4️⃣ Khả năng mở rộng
 
-|---------------------|------------------------------------------------------|
 | Mode                | Đặc điểm                                             |
 |---------------------|------------------------------------------------------|
 | SequentialExecutor  | Chạy tuần tự – chỉ dùng khi test                     |
-|---------------------|------------------------------------------------------|
 | LocalExecutor       | Chạy song song trong 1 máy                           |
-|---------------------|------------------------------------------------------|
 | CeleryExecutor      | Scale bằng nhiều worker, sử dụng Redis/RabbitMQ      |
-|---------------------|------------------------------------------------------|
 | KubernetesExecutor  | Tự động spawn pod cho từng task – lý tưởng cho cloud |
-|---------------------|------------------------------------------------------|
+
 
 
 ---
@@ -95,21 +91,14 @@ Airflow cho phép bạn định nghĩa các DAGs (Directed Acyclic Graphs) — m
 ### 📦 Mô tả chi tiết:
 
 
-|--------------|--------------------------------------|-------------------------------------------|
 | Thành phần   | Mô tả                                | Tính năng chính                           |
 |--------------|--------------------------------------|-------------------------------------------|
 | Webserver    | Giao diện người dùng (Flask)         | Xem DAG, trigger, log                     | 
-|--------------|--------------------------------------|-------------------------------------------|
 | Scheduler    | Lập lịch DAG theo thời gian          | Theo dõi trạng thái & lên lịch task       |
-|--------------|--------------------------------------|-------------------------------------------|
 | Worker       | Thực thi task DAG                    | Có thể scale hàng chục                    |
-|--------------|--------------------------------------|-------------------------------------------|
 | Broker       | Giao tiếp giữa Scheduler và Worker   | Redis hoặc RabbitMQ                       |
-|--------------|--------------------------------------|-------------------------------------------|
 | Metadata DB  | Lưu trạng thái, DAG, task...         | Cực kỳ quan trọng, không được mất dữ liệu |
-|--------------|--------------------------------------|-------------------------------------------|
 | Flower       | Monitor queue Celery                 | Xem queue, retry, trạng thái worker       |
-|--------------|--------------------------------------|-------------------------------------------|
 
 
 ---
@@ -182,8 +171,8 @@ Mô hình hoá hệ thống Airflow linh hoạt, hiện đại theo kiến trúc
 
 ## 🧩 Thành phần & vai trò
 
-| Thành phần         | Vai trò |
-|--------------------|--------|
+| Thành phần         | Vai trò           |
+|--------------------|-----------------------------|
 | **GitHub CI/CD**   | Kiểm thử, build, push image |
 | **Docker Compose / K8s** | Triển khai Airflow stack |
 | **Nginx proxy**    | Reverse proxy, SSL |
@@ -701,13 +690,10 @@ airflow plugins list          # Liệt kê plugin đã được load
 | **Lưu ý**     | **Mẹo**                               |
 |---------------|---------------------------------------|
 | Load chậm?	| Kiểm tra log khi khởi động webserver  |
-|---------------|---------------------------------------|
 | Debug plugin	| Dùng airflow plugins list             |
-|---------------|---------------------------------------|
 | Reusable code	| Tách rõ file .py trong plugins/       |
-|---------------|---------------------------------------|
 | Reload plugin	| Phải restart webserver/scheduler      |
----------------------------------------------------------
+
 
 -----------------------------------------------------------------------------
 
@@ -726,29 +712,18 @@ Password: Vccb1234
 
 | **Mục**                 |	**Mô tả**
 |-------------------------|-----------------------------------------------------------|
-| DAGs	                  | Danh sách các DAG được phát hiện trong thư mục dags/
-|-------------------------|-----------------------------------------------------------|
-| Tree View	              | Biểu đồ DAG dạng cây: các task theo ngày chạy
-|-------------------------|-----------------------------------------------------------|
-| Graph View	          | DAG hiển thị theo dạng node – giúp dễ hình dung pipeline
-|-------------------------|-----------------------------------------------------------|
-| Code	                  | Xem source code Python của DAG
-|-------------------------|-----------------------------------------------------------|
-| Trigger DAG	          | Kích hoạt DAG thủ công
-|-------------------------|-----------------------------------------------------------|
-| Pause/Unpause	          | Bật/tắt chạy DAG theo schedule
-|-------------------------|-----------------------------------------------------------|
-| Admin → Connections     |	Quản lý kết nối đến DB, API, SFTP,…
-|-------------------------|-----------------------------------------------------------|
-| Admin → Variables	      | Biến môi trường toàn cục cho DAG
-|-------------------------|-----------------------------------------------------------|
-| Admin → Pools	          | Giới hạn số task chạy song song
-|-------------------------|-----------------------------------------------------------|
-| Browse → Task Instances |	Theo dõi từng lần chạy của task
-|-------------------------|-----------------------------------------------------------|
-| Browse → Logs	          | Xem log task chạy thất bại/thành công
-|-------------------------|-----------------------------------------------------------|
-| Browse → DAG Runs	      | Danh sách các lần chạy của mỗi DAG
+| DAGs	                  | Danh sách các DAG được phát hiện trong thư mục dags/   |
+| Tree View	              | Biểu đồ DAG dạng cây: các task theo ngày chạy    |
+| Graph View	          | DAG hiển thị theo dạng node – giúp dễ hình dung pipeline  |
+| Code	                  | Xem source code Python của DAG  |
+| Trigger DAG	          | Kích hoạt DAG thủ công   |
+| Pause/Unpause	          | Bật/tắt chạy DAG theo schedule  |
+| Admin → Connections     |	Quản lý kết nối đến DB, API, SFTP,…  |
+| Admin → Variables	      | Biến môi trường toàn cục cho DAG  |
+| Admin → Pools	          | Giới hạn số task chạy song song  |
+| Browse → Task Instances |	Theo dõi từng lần chạy của task  |
+| Browse → Logs	          | Xem log task chạy thất bại/thành công  |
+| Browse → DAG Runs	      | Danh sách các lần chạy của mỗi DAG  |
 
 ### 🔧 1. Cấu hình Connections
     1.	Truy cập: Admin → Connections
@@ -757,20 +732,14 @@ Password: Vccb1234
 
 | **Field**    | **Value**
 |--------------|----------------------------------------|
-| Conn Id	   | my_postgres
-|--------------|----------------------------------------|
-| Conn Type	   | Postgres
-|--------------|----------------------------------------|
-| Host	       | postgres (tên service trong compose)
-|--------------|----------------------------------------|
-| Schema	   | airflow
-|--------------|----------------------------------------|
-| Login	       | airflow
-|--------------|----------------------------------------|
-| Password	   | airflow
-|--------------|----------------------------------------|
-| Port	       | 5432
-|--------------|----------------------------------------|
+| Conn Id	   | my_postgres   |
+| Conn Type	   | Postgres   |
+| Host	       | postgres (tên service trong compose)  |
+| Schema	   | airflow  |
+| Login	       | airflow  |
+| Password	   | airflow  |
+| Port	       | 5432  |
+
 
 **🧪 Bạn có thể test bằng Python operator dùng:**
 ```python
@@ -826,16 +795,11 @@ airflow users create \
 
 | **Việc cần làm**         |  	**Thực hiện ở đâu**
 |--------------------------|----------------------------|
-| Tạo DAG, Trigger DAG     | Trang DAGs
-|--------------------------|----------------------------|
-| Xem log, trạng thái task | Browse → Task Instances
-|--------------------------|----------------------------|
-| Quản lý DB/API…	       | Admin → Connections
-|--------------------------|----------------------------|
-| Lưu biến toàn cục	       | Admin → Variables
-|--------------------------|----------------------------|
-| Tạo người dùng	       | CLI hoặc Admin UI
-|--------------------------|----------------------------|
+| Tạo DAG, Trigger DAG     | Trang DAGs |
+| Xem log, trạng thái task | Browse → Task Instances |
+| Quản lý DB/API…	       | Admin → Connections |
+| Lưu biến toàn cục	       | Admin → Variables |
+| Tạo người dùng	       | CLI hoặc Admin UI |
 
 
 -----------------------------------------------------------------------------
@@ -890,7 +854,7 @@ PythonOperator(
 ```
 ## 4️⃣ Ưu nhược điểm của Airflow:
 
-| Ưu điểm                           | Nhược điểm                             |
+| **Ưu điểm**                      | **Nhược điểm**                         |
 |----------------------------------|----------------------------------------|
 | ✅ Quản lý DAG bằng Python        | ❌ Không tối ưu cho real-time streaming |
 | ✅ Web UI đẹp, dễ dùng            | ❌ Khởi động chậm nếu DAG lớn           |
@@ -900,7 +864,7 @@ PythonOperator(
 
 ## 5️⃣ So sánh với các framework khác
 
-| Tool              | Open Source | Điểm mạnh                | Yếu điểm / Hạn chế                  |
+| **Tool**              | **Open Source** | **Điểm mạnh**                | **Yếu điểm / Hạn chế**   |
 |-------------------|-------------|--------------------------|--------------------------------------|
 | **Airflow**       | ✅           | Linh hoạt, phổ biến       | Không real-time                      |
 | Prefect           | ✅           | Dễ dùng, DAG như Python   | Giao diện miễn phí còn hạn chế       |
@@ -939,16 +903,13 @@ PythonOperator(
 	•	Hoặc Airflow trigger DAG khi detect file/message
 ### 📦 Cách tích hợp phổ biến:
 
-Cách	             | Mô tả
----------------------|-------------------------------------------------------------------|
-Kafka Consumer DAG	 | DAG chạy mỗi X phút, dùng hook để lấy batch từ Kafka
----------------------|-------------------------------------------------------------------|
-Sensor + Kafka	     | Viết custom sensor, check Kafka message rồi trigger task
----------------------|-------------------------------------------------------------------|
-Kafka → HTTP	     | Kafka push event đến API để trigger Airflow DAG (via REST API)
----------------------|-------------------------------------------------------------------|
-Kafka → DB → Airflow | Kafka dump vào DB, Airflow dùng ExternalTaskSensor
----------------------|-------------------------------------------------------------------|
+|**Cách**	             | **Mô tả** |
+|---------------------|-------------------------------------------------------------------|
+|Kafka Consumer DAG	 | DAG chạy mỗi X phút, dùng hook để lấy batch từ Kafka|
+|Sensor + Kafka	     | Viết custom sensor, check Kafka message rồi trigger task|
+|Kafka → HTTP	     | Kafka push event đến API để trigger Airflow DAG (via REST API)|
+|Kafka → DB → Airflow | Kafka dump vào DB, Airflow dùng ExternalTaskSensor|
+
 
 ### 🔧 Ví dụ sử dụng Kafka Hook:
 
