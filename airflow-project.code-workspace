@@ -1,8 +1,47 @@
 {
 	"folders": [
-		{
-			"path": "."
-		}
+			{
+				"path": "."
+			},
+		    // {
+			// 	"path": "./plugins"
+			// },
+			// {
+			// 	"path": "./dags"
+			// },
+			// {
+			// 	"path": "./config"
+			// },
+			// {
+			// 	"path": "./modules"
+			// },
+			// {
+			// 	"path": "./scripts"
+			// }
 	],
-	"settings": {}
+	"settings": {
+		"python.pythonPath": ".\\env\\Scripts\\python.exe",
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+		"editor.formatOnSave": true,
+		"python.linting.flake8Enabled": true,
+		"docker.commands.attachShell.enabled": true,
+		"git.enableSmartCommit": true,
+		"git.autofetch": true,
+		"terminal.integrated.defaultProfile.windows": "PowerShell",
+		"terminal.integrated.profiles.windows": {
+			"PowerShell": {
+				"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+			},
+			"Command Prompt": {
+				"path": "C:\\Windows\\System32\\cmd.exe"
+			}
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-azuretools.vscode-docker"
+		]
+	}
 }

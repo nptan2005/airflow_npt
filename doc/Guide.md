@@ -350,8 +350,8 @@ volumes:
   - ./pgdata:/var/lib/postgresql/data
 ```
 
-### Backup volumn data postgre ra ngoài
-#####📦 1. Export volume ra .tar:
+## Backup volumn data postgre ra ngoài
+###📦 1. Export volume ra .tar:
 ```base
 docker run --rm \
   -v airflow_bvb_postgres-db-volume:/volume \
@@ -359,7 +359,7 @@ docker run --rm \
   alpine \
   tar czf /backup/postgres_data_backup.tar.gz -C /volume .
 ```
-#####🔁 3. Restore trên máy dev khác:
+###🔁 3. Restore trên máy dev khác:
 
 ```base
 # Tạo volume mới (nếu chưa có)
@@ -371,4 +371,29 @@ docker run --rm \
   -v $(pwd)/db_backup:/backup \
   alpine \
   tar xzf /backup/postgres_data_backup.tar.gz -C /volume
+```
+# Image rác (None)
+## Cách xóa toàn bộ images <none>:
+### 1. Xóa các images <none>: Chạy lệnh sau để xóa tất cả các dangling images:
+```bash
+docker rmi $(docker images -f "dangling=true" -q) --force
+```
+### 2. Xóa toàn bộ images không cần thiết: Nếu bạn muốn dọn dẹp mọi images không dùng, bao gồm cả dangling và các unused images:
+```bash
+docker image prune --all --force
+```
+## Kiểm tra và quản lý hiệu quả:
+### Tag lại image nếu cần: Nếu có image <none> bạn muốn giữ lại, bạn có thể gắn tag lại:
+```bash
+docker tag <IMAGE_ID> <REPOSITORY>:<TAG>
+```
+Ví dụ:
+```bash
+docker tag e6f415a2ae43 airflow-custom:latest
+```
+
+### Hạn chế tạo dangling images: Trong quá trình build, hãy đảm bảo sử dụng tham số -t để gán tag trực tiếp:
+
+```bash
+docker build -t my-image:latest .
 ```

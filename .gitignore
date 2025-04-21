@@ -10,7 +10,7 @@ cx_Oracle-doc/
 __pycache__/
 *.py[cod]
 *$py.class
-
+.env
 # C extensions
 *.so
 scheduleServiceEnv/
@@ -133,7 +133,7 @@ schedulerSerivce/
 
 # Rope project settings
 .ropeproject
-.vscode/
+.vscode/*
 # mkdocs documentation
 /site
 

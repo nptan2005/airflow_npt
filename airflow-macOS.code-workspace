@@ -1,0 +1,47 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        // {
+        //     "path": "./plugins"
+        // },
+        // {
+        //     "path": "./dags"
+        // },
+        // {
+        //     "path": "./config"
+        // },
+        // {
+        //     "path": "./modules"
+        // },
+        // {
+        //     "path": "./scripts"
+        // }
+    ],
+    "settings": {
+        "python.pythonPath": "./venv/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "editor.formatOnSave": true,
+        "python.linting.flake8Enabled": true,
+        "docker.commands.attachShell.enabled": true,
+        "git.enableSmartCommit": true,
+        "git.autofetch": true,
+        "terminal.integrated.defaultProfile.osx": "zsh",
+        "terminal.integrated.profiles.osx": {
+            "zsh": {
+                "path": "/bin/zsh"
+            },
+            "bash": {
+                "path": "/bin/bash"
+            }
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-azuretools.vscode-docker"
+        ]
+    }
+}

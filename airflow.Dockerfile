@@ -49,11 +49,11 @@ USER root
 RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
     apt-get update && \
     if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        apt-get install -y openjdk-11-jdk && \
-        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 ; \
+    apt-get install -y openjdk-11-jdk && \
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 ; \
     else \
-        apt-get install -y openjdk-11-jdk && \
-        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64 ; \
+    apt-get install -y openjdk-11-jdk && \
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64 ; \
     fi && \
     rm -rf /var/lib/apt/lists/* && \
     echo "JAVA_HOME=$JAVA_HOME" && \
@@ -92,5 +92,5 @@ RUN python -m pip install --no-cache-dir -r airflow.requirements.txt
 USER root
 COPY scripts scripts
 RUN chmod +x scripts
-
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 USER $AIRFLOW_UID
