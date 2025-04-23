@@ -221,7 +221,7 @@ def export_to_excel():
 
         # Xuất ra file Excel
         output_path = (
-            "/opt/airflow/out_data/exported_data.xlsx"  # Thay đường dẫn file phù hợp
+            "/opt/airflow/data/exported_data.xlsx"  # Thay đường dẫn file phù hợp
         )
         df.to_excel(output_path, index=False, engine="openpyxl")
         print(f"File Excel đã được xuất ra tại: {output_path}")

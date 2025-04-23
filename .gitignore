@@ -5,6 +5,7 @@
 # poetry.lock
 # pyproject.toml
 Logs/
+data/**
 env/Lib/
 cx_Oracle-doc/
 __pycache__/
