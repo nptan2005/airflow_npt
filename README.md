@@ -1,13 +1,3 @@
-# Giới thiệu:
-
-## Mục đích dự án:
-Dự án này xử lý việc lên lịch, thực thi và lưu trữ dữ liệu sau khi xử lý. Nó tích hợp với cơ sở dữ liệu Oracle, các server SFTP và dịch vụ email.
-
-Project sử dụng Sử dụng airflow, được mở rộng bằng các thư viên python (schedule service) do tôi viết và áp dụng vài tổ chức đã làm trước đây.
-
-## tác giả:
-**email:** *nptan2005@gmail.com*
-
 # 📊 Tổng Quan Apache Airflow
 
 ---
@@ -107,7 +97,7 @@ Airflow cho phép bạn định nghĩa các DAGs (Directed Acyclic Graphs) — m
 
 -----------------------------------------------------------------------------
 
-# ⚙️ README: Mô hình triển khai Apache Airflow theo Docker & Microservices + CI/CD
+# ⚙️ Mô hình triển khai Apache Airflow theo Docker & Microservices + CI/CD
 
 ---
 

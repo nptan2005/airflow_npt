@@ -37,181 +37,182 @@ def export_to_excel():
         #                 FROM public.transaction_model a;
         # """
 
-        query = """
-            SELECT datname AS database_name
-                FROM pg_database
-                WHERE datistemplate = false;
-                with maping_user as (
-                        select name, rs.id as res_user_id, rp as res_partner_id from res_partner rp left join res_users rs on rs.partner_id = rp.id
-                    ), log_note as (
-                        select res_id as partner_id, json_agg(body) as note from mail_message group by res_id
-                    ), master_merchant as (
-                        select id from res_partner where contact_type ilike 'master_merchant' and active=true
-                    )
-                    SELECT
-                        rp.name as "Tên Merchant",
-                        ru.create_date as "Ngày kích hoạt Digistore Merchant",
-                        rp.phone AS "Điện thoại",
-                        rp.mobile AS "Di Động",
-                        --rp.email AS "Email",
-                        --rp.position AS "Chức vụ",
-                        rp.status AS "Trạng thái",
-                        rp.vat AS "Mã số thuế",
-                        rp.merchant_id AS "Merchant ID",
-                        rp.merchant_id AS "Merchant ID",
-                        --lp.business_license_file_name AS "Giấy phép kinh doanh",
-                        rpb.acc_holder_name AS "Tên chủ tài khoản",
-                        rp.service_type AS "Loại dịch vụ",
-                        rp.resgister_device AS  "Đăng ký thiết bị",
-                        rpp.is_active as "Trạng thái EDC",
-                        rpp.received_date as "Ngày nhận EDC",
-                        rp.device_delivery_status AS "Trạng thái giao thiết bị",
-                        tm.mid AS "Mid",
-                        tm.tid AS "Tid",
-                        tm.serial_no AS "Serial No",
-                        STRING_AGG(DISTINCT rpb.acc_number, ', ') AS "Số tài khoản thanh toán"
-                    FROM
-                        res_partner rp
-                    LEFT JOIN
-                        res_users ru ON rp.id = ru.partner_id
-                    LEFT JOIN
-                        res_partner_bank rpb ON rp.id = rpb.partner_id
-                    LEFT JOIN
-                        res_bank rb ON rpb.bank_id = rb.id
-                    LEFT JOIN
-                    log_note lnt ON lnt.partner_id = rp.id
-                    LEFT JOIN
-                        maping_user sp ON rp.user_id = sp.res_user_id
-                    LEFT JOIN
-                        res_company rc ON rp.company_id = rc.id
-                    LEFT JOIN
-                        res_partner_pos rpp ON rp.id = rpp.merchant_id
-                    LEFT JOIN
-                        transaction_model tm ON tm.customer_id = rp.id
-                    LEFT JOIN
-                        license_partner lp ON lp.partner_id = rp.id
-                    WHERE
-                        (ru.share = TRUE OR ru.share is null)
-                    AND contact_type ilike 'merchant'
-                        AND rp.active = TRUE
-                    AND rp.id not in (select partner_id from res_company)
-                    AND (rp.parent_id in (select * from master_merchant) OR (rp.parent_id is null AND rp.id not in (select * from master_merchant)))
-
-                    GROUP BY
-                        rp.id,
-                        rp.name,
-                        ru.create_date,
-                        rp.contact_address_complete,
-                        rp.phone,
-                        rp.email,
-                        rp.mobile,
-                        rp.position,
-                        rp.status,
-                        rp.vat,
-                        rp.merchant_id,
-                        lp.business_license_file_name,
-                        rpb.acc_holder_name,
-                        rp.service_type,
-                        rp.resgister_device,
-                        rp.device_delivery_status,
-                        tm.mid,
-                        tm.tid,
-                        tm.serial_no,
-                        sp.name,
-                        rc.name,
-                    rpp.is_active,
-                    rpp.received_date
-                    ORDER BY
-                        rp.name;
-                    """
-
         # query = """
-        #     with maping_user as (
-        #             select name, rs.id as res_user_id, rp as res_partner_id from res_partner rp left join res_users rs on rs.partner_id = rp.id
-        #         ), log_note as (
-        #             select res_id as partner_id, json_agg(body) as note from mail_message group by res_id
-        #         ), master_merchant as (
-        #             select id from res_partner where contact_type ilike 'master_merchant' and active=true
-        #         )
-        #         SELECT
-        #             rp.name AS merchant_name,
-        #             ru.create_date AS user_account_created_date,
-        #             rp.contact_address_complete AS address,
-        #             rp.phone AS phone,
-        #             rp.mobile AS mobile,
-        #             rp.email AS email,
-        #             rp.position AS job_position,
-        #             rp.status AS status,
-        #             rp.vat AS tax_id,
-        #             rp.merchant_id AS merchant_id,
-        #             lp.business_license_file_name AS business_license_file_name,
-        #             rpb.acc_holder_name AS bank_account_holder_name,
-        #             rp.service_type AS service_type,
-        #             rp.resgister_device AS register_device,
-        #             rpp.is_active as pos_is_active,
-        #             rpp.received_date as received_date,
-        #             rp.device_delivery_status AS device_delivery_status,
-        #             tm.mid AS mid,
-        #             tm.tid AS tid,
-        #             tm.serial_no AS serial_no,
-        #             STRING_AGG(DISTINCT rpb.acc_number, ', ') AS bank_account,
-        #             json_agg(lnt.note) AS partner_notes,
-        #             sp.name AS salesperson_name,
-        #             rc.name AS company_name,
-        #             json_agg(DISTINCT rpp.name) AS edc
-        #         FROM
-        #             res_partner rp
-        #         LEFT JOIN
-        #             res_users ru ON rp.id = ru.partner_id
-        #         LEFT JOIN
-        #             res_partner_bank rpb ON rp.id = rpb.partner_id
-        #         LEFT JOIN
-        #             res_bank rb ON rpb.bank_id = rb.id
-        #         LEFT JOIN
-        #         log_note lnt ON lnt.partner_id = rp.id
-        #         LEFT JOIN
-        #             maping_user sp ON rp.user_id = sp.res_user_id
-        #         LEFT JOIN
-        #             res_company rc ON rp.company_id = rc.id
-        #         LEFT JOIN
-        #             res_partner_pos rpp ON rp.id = rpp.merchant_id
-        #         LEFT JOIN
-        #             transaction_model tm ON tm.customer_id = rp.id
-        #         LEFT JOIN
-        #             license_partner lp ON lp.partner_id = rp.id
-        #         WHERE
-        #             (ru.share = TRUE OR ru.share is null)
-        #         AND contact_type ilike 'merchant'
-        #             AND rp.active = TRUE
-        #         AND rp.id not in (select partner_id from res_company)
-        #         AND (rp.parent_id in (select * from master_merchant) OR (rp.parent_id is null AND rp.id not in (select * from master_merchant)))
-        #         GROUP BY
-        #             rp.id,
-        #             rp.name,
-        #             ru.create_date,
-        #             rp.contact_address_complete,
-        #             rp.phone,
-        #             rp.email,
-        #             rp.mobile,
-        #             rp.position,
-        #             rp.status,
-        #             rp.vat,
-        #             rp.merchant_id,
-        #             lp.business_license_file_name,
-        #             rpb.acc_holder_name,
-        #             rp.service_type,
-        #             rp.resgister_device,
-        #             rp.device_delivery_status,
-        #             tm.mid,
-        #             tm.tid,
-        #             tm.serial_no,
-        #             sp.name,
-        #             rc.name,
+        #     SELECT datname AS database_name
+        #         FROM pg_database
+        #         WHERE datistemplate = false;
+        #         with maping_user as (
+        #                 select name, rs.id as res_user_id, rp as res_partner_id from res_partner rp left join res_users rs on rs.partner_id = rp.id
+        #             ), log_note as (
+        #                 select res_id as partner_id, json_agg(body) as note from mail_message group by res_id
+        #             ), master_merchant as (
+        #                 select id from res_partner where contact_type ilike 'master_merchant' and active=true
+        #             )
+        #             SELECT
+        #                 rp.name as "Tên Merchant",
+        #                 ru.create_date as "Ngày kích hoạt Digistore Merchant",
+        #                 rp.phone AS "Điện thoại",
+        #                 rp.mobile AS "Di Động",
+        #                 --rp.email AS "Email",
+        #                 --rp.position AS "Chức vụ",
+        #                 rp.status AS "Trạng thái",
+        #                 rp.vat AS "Mã số thuế",
+        #                 rp.merchant_id AS "Merchant ID",
+        #                 rp.merchant_id AS "Merchant ID",
+        #                 --lp.business_license_file_name AS "Giấy phép kinh doanh",
+        #                 rpb.acc_holder_name AS "Tên chủ tài khoản",
+        #                 rp.service_type AS "Loại dịch vụ",
+        #                 rp.resgister_device AS  "Đăng ký thiết bị",
+        #                 rpp.is_active as "Trạng thái EDC",
+        #                 rpp.received_date as "Ngày nhận EDC",
+        #                 rp.device_delivery_status AS "Trạng thái giao thiết bị",
+        #                 tm.mid AS "Mid",
+        #                 tm.tid AS "Tid",
+        #                 tm.serial_no AS "Serial No",
+        #                 STRING_AGG(DISTINCT rpb.acc_number, ', ') AS "Số tài khoản thanh toán"
+        #             FROM
+        #                 res_partner rp
+        #             LEFT JOIN
+        #                 res_users ru ON rp.id = ru.partner_id
+        #             LEFT JOIN
+        #                 res_partner_bank rpb ON rp.id = rpb.partner_id
+        #             LEFT JOIN
+        #                 res_bank rb ON rpb.bank_id = rb.id
+        #             LEFT JOIN
+        #             log_note lnt ON lnt.partner_id = rp.id
+        #             LEFT JOIN
+        #                 maping_user sp ON rp.user_id = sp.res_user_id
+        #             LEFT JOIN
+        #                 res_company rc ON rp.company_id = rc.id
+        #             LEFT JOIN
+        #                 res_partner_pos rpp ON rp.id = rpp.merchant_id
+        #             LEFT JOIN
+        #                 transaction_model tm ON tm.customer_id = rp.id
+        #             LEFT JOIN
+        #                 license_partner lp ON lp.partner_id = rp.id
+        #             WHERE
+        #                 (ru.share = TRUE OR ru.share is null)
+        #             AND contact_type ilike 'merchant'
+        #                 AND rp.active = TRUE
+        #             AND rp.id not in (select partner_id from res_company)
+        #             AND (rp.parent_id in (select * from master_merchant) OR (rp.parent_id is null AND rp.id not in (select * from master_merchant)))
+
+        #             GROUP BY
+        #                 rp.id,
+        #                 rp.name,
+        #                 ru.create_date,
+        #                 rp.contact_address_complete,
+        #                 rp.phone,
+        #                 rp.email,
+        #                 rp.mobile,
+        #                 rp.position,
+        #                 rp.status,
+        #                 rp.vat,
+        #                 rp.merchant_id,
+        #                 lp.business_license_file_name,
+        #                 rpb.acc_holder_name,
+        #                 rp.service_type,
+        #                 rp.resgister_device,
+        #                 rp.device_delivery_status,
+        #                 tm.mid,
+        #                 tm.tid,
+        #                 tm.serial_no,
+        #                 sp.name,
+        #                 rc.name,
         #             rpp.is_active,
         #             rpp.received_date
-        #         ORDER BY
-        #             rp.name;
+        #             ORDER BY
+        #                 rp.name;
         #             """
+
+        query = """
+            with maping_user as (
+                    select name, rs.id as res_user_id, rp as res_partner_id from res_partner rp left join res_users rs on rs.partner_id = rp.id
+                ), log_note as (
+                    select res_id as partner_id, json_agg(body) as note from mail_message group by res_id
+                ), master_merchant as (
+                    select id from res_partner where contact_type ilike 'master_merchant' and active=true
+                )
+                SELECT
+                    rp.name AS merchant_name,
+                    rp.id as merchant_id,
+                    ru.create_date AS user_account_created_date,
+                    rp.contact_address_complete AS address,
+                    rp.phone AS phone,
+                    rp.mobile AS mobile,
+                    rp.email AS email,
+                    rp.position AS job_position,
+                    rp.status AS status,
+                    rp.vat AS tax_id,
+                    rp.merchant_id AS merchant_id,
+                    lp.business_license_file_name AS business_license_file_name,
+                    rpb.acc_holder_name AS bank_account_holder_name,
+                    rp.service_type AS service_type,
+                    rp.resgister_device AS register_device,
+                    rpp.is_active as pos_is_active,
+                    rpp.received_date as received_date,
+                    rp.device_delivery_status AS device_delivery_status,
+                    tm.mid AS mid,
+                    tm.tid AS tid,
+                    tm.serial_no AS serial_no,
+                    STRING_AGG(DISTINCT rpb.acc_number, ', ') AS bank_account,
+                    json_agg(lnt.note) AS partner_notes,
+                    sp.name AS salesperson_name,
+                    rc.name AS company_name,
+                    json_agg(DISTINCT rpp.name) AS edc
+                FROM
+                    res_partner rp
+                LEFT JOIN
+                    res_users ru ON rp.id = ru.partner_id
+                LEFT JOIN
+                    res_partner_bank rpb ON rp.id = rpb.partner_id
+                LEFT JOIN
+                    res_bank rb ON rpb.bank_id = rb.id
+                LEFT JOIN
+                log_note lnt ON lnt.partner_id = rp.id
+                LEFT JOIN
+                    maping_user sp ON rp.user_id = sp.res_user_id
+                LEFT JOIN
+                    res_company rc ON rp.company_id = rc.id
+                LEFT JOIN
+                    res_partner_pos rpp ON rp.id = rpp.merchant_id
+                LEFT JOIN
+                    transaction_model tm ON tm.customer_id = rp.id
+                LEFT JOIN
+                    license_partner lp ON lp.partner_id = rp.id
+                WHERE
+                    (ru.share = TRUE OR ru.share is null)
+                AND contact_type ilike 'merchant'
+                    AND rp.active = TRUE
+                AND rp.id not in (select partner_id from res_company)
+                AND (rp.parent_id in (select * from master_merchant) OR (rp.parent_id is null AND rp.id not in (select * from master_merchant)))
+                GROUP BY
+                    rp.id,
+                    rp.name,
+                    ru.create_date,
+                    rp.contact_address_complete,
+                    rp.phone,
+                    rp.email,
+                    rp.mobile,
+                    rp.position,
+                    rp.status,
+                    rp.vat,
+                    rp.merchant_id,
+                    lp.business_license_file_name,
+                    rpb.acc_holder_name,
+                    rp.service_type,
+                    rp.resgister_device,
+                    rp.device_delivery_status,
+                    tm.mid,
+                    tm.tid,
+                    tm.serial_no,
+                    sp.name,
+                    rc.name,
+                    rpp.is_active,
+                    rpp.received_date
+                ORDER BY
+                    rp.name;
+                    """
         cursor.execute(query)
         rows = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
