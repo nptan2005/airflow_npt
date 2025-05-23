@@ -51,6 +51,10 @@ x-airflow-common:
     dockerfile: ./airflow.Dockerfile
 ```
 
+```bash
+docker system prune -f
+```
+
 ## 🐳 Docker Commands
 
 ### A. Build:

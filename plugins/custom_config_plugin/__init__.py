@@ -1,16 +1,17 @@
 from airflow.plugins_manager import AirflowPlugin
 from flask import Blueprint
-from flask_appbuilder import BaseView, expose
-from .views import AppSettingView
-from .models import AppSetting # Import your model
+
+# from flask_appbuilder import BaseView, expose
+from custom_config_plugin.views import AppSettingView
+from custom_config_plugin.models import AppSetting  # Import your model
 
 # Create a Flask Blueprint
 custom_config_bp = Blueprint(
     "custom_config_bp",
     __name__,
     template_folder="templates",  # You can create a 'templates' subfolder for custom HTML
-    static_folder="static",    # You can create a 'static' subfolder for CSS/JS
-    static_url_path="/static/custom_config_plugin", # URL path for static files
+    static_folder="static",  # You can create a 'static' subfolder for CSS/JS
+    static_url_path="/static/custom_config_plugin",  # URL path for static files
 )
 
 # If you wanted a completely custom page (not a ModelView)
@@ -26,19 +27,30 @@ custom_config_bp = Blueprint(
 #         return "This is a custom page placeholder."
 
 # Instantiate the ModelView for AppSettings
-app_settings_view = AppSettingView()
-app_settings_view.appbuilder_sm = None # Reset SecurityManager if needed, usually handled by appbuilder
+# app_settings_view = AppSettingView()
+# flask_appbuilder_views = [
+#     {
+#         "name": "App Settings",
+#         "category": "Custom Config",
+#         "view": AppSettingView,
+#     }
+# ]
+
+# app_settings_view.appbuilder_sm = (
+#     None  # Reset SecurityManager if needed, usually handled by appbuilder
+# )
+
 
 # Define the plugin class
 class CustomConfigPlugin(AirflowPlugin):
     name = "custom_config_plugin"
-    
+
     # A list of class(es) derived from BaseView
     flask_appbuilder_views = [
         {
-            "name": "App Settings", # Name of the menu item
-            "category": "Custom Config", # Category in the menu
-            "view": app_settings_view,
+            "name": "App Settings",  # Name of the menu item
+            "category": "Custom Config",  # Category in the menu
+            "view": AppSettingView,
         }
         # If you had a custom page:
         # {
@@ -47,13 +59,20 @@ class CustomConfigPlugin(AirflowPlugin):
         #     "view": MyCustomPageView(),
         # }
     ]
-    
+
     # A list of blueprint object(s)
     blueprints = [custom_config_bp]
-    
+
     # A list of menu item(s)
     # menu_items = [] # You can also define menu items directly here
-    
+    menu_links = [
+        {
+            "name": "Custom Config",
+            "href": "/app/custom_config_plugin/appsettingview/list/",
+            "category": "Custom Plugins",
+        }
+    ]
+
     # A list of SQLAlchemy models that should be exposed to the ORM
     # This is important for Airflow to recognize and create/manage your table
     models = [AppSetting]
