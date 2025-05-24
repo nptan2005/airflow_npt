@@ -608,7 +608,7 @@ Nếu workload yêu cầu < 5 phút/dữ liệu – dùng Prefect, Flink hoặc 
 
 - [Apache Airflow Docs](https://airflow.apache.org/docs/)
 - [Helm Chart Airflow](https://github.com/apache/airflow/tree/main/chart)
-- [📘 Xem tài liệu chi tiết](docs/README.md)
+- [📘 Xem tài liệu chi tiết](doc/Guide.md)
 
 ---
 
