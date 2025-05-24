@@ -248,16 +248,16 @@ services:
     depends_on:
       - airflow-webserver
     restart: always
-  haproxy:
-    image: haproxy:latest
-    mem_limit: ${HAPROXY_MEM}
-    cpus: ${HAPROXY_CPU}
-    ports:
-      # - "443:443"
-      - "5432:5432"
-    volumes:
-      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-      - ./haproxy/certs/server.pem:/usr/local/etc/haproxy/server.pem:ro
+  # haproxy:
+  #   image: haproxy:latest
+  #   mem_limit: ${HAPROXY_MEM}
+  #   cpus: ${HAPROXY_CPU}
+  #   ports:
+  #     # - "443:443"
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+  #     - ./haproxy/certs/server.pem:/usr/local/etc/haproxy/server.pem:ro
   flower:
     <<: *airflow-common
     # container_name: airflow-flower
