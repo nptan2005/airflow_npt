@@ -3,7 +3,7 @@ x-airflow-common: &airflow-common
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: airflow-nptan:1.0.0
+  image: ${AIRFLOW_CONTAINER_NAME}
   build:
     context: .
     dockerfile: ./airflow.Dockerfile
@@ -11,7 +11,7 @@ x-airflow-common: &airflow-common
       # AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.5-python3.12}
       AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME}
   environment: &airflow-common-env # AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__CORE__EXECUTOR: ${EXECUTOR}
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY}
@@ -34,7 +34,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__WEBSERVER__COOKIE_SAMESITE: "Lax"
     AIRFLOW__WEBSERVER__COOKIE_HTTPONLY: "True"
     AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"     # Hoặc DEBUG khi cần gỡ lỗi
-    AIRFLOW__LOGGING__LOGGING_CONFIG_CLASS: airflow_local_settings.LOGGING_CONFIG
+    # AIRFLOW__LOGGING__LOGGING_CONFIG_CLASS: airflow_local_settings.LOGGING_CONFIG
     AIRFLOW__SCHEDULER__USE_JOB_SCHEDULE: "True"
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: "false" #True: Cho phép sử dụng pickle (có thể gây rủi ro bảo mật nếu không kiểm soát được dữ liệu). / False: Sử dụng JSON để serialize (an toàn hơn). >>> =False để tăng cường bảo mật.
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
@@ -68,9 +68,9 @@ services:
     mem_limit: ${POSTGRES_MEM}
     cpus: ${POSTGRES_CPU}
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     networks:

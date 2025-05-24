@@ -144,43 +144,7 @@ Bạn định nghĩa các DAGs (Directed Acyclic Graphs) — chuỗi các task p
 
 ---
 
-## 🔁 CI/CD mẫu với GitHub Actions
 
-```yaml
-name: Deploy Airflow
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - uses: docker/setup-buildx-action@v2
-
-    - name: Build & Push image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        tags: your_user/airflow-nptan:latest
-        push: true
-
-    - name: Trigger Deploy Server (SSH)
-      uses: appleboy/ssh-action@v1
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          cd airflow-deploy
-          docker compose pull
-          docker compose up -d
-```
-
----
 
 ## 🔐 Secrets CI/CD cần thiết
 
@@ -210,7 +174,7 @@ jobs:
 
 ---
 
-# 📘 Airflow Production & Development Setup Guide
+# [📘 Airflow Production & Development Setup Guide](docs/Airflow_Production_and_Development_Setup_Guide.md)
 
 ## 1. Docker Compose (Development Mode)
 
@@ -226,86 +190,9 @@ Docker Compose là cách nhanh gọn để khởi chạy toàn bộ Airflow stac
 - `redis` (Celery broker)
 - `nginx` (proxy/nginx optional)
 
-### Image chuẩn:
 
-```yaml
-x-airflow-common:
-  &airflow-common
-  image: airflow-nptan:1.0.0
-  build:
-    context: .
-    dockerfile: ./airflow.Dockerfile
-```
 
-### Clean container names:
-
-```yaml
-services:
-  airflow-webserver:
-    <<: *airflow-common
-    container_name: airflow-webserver
-
-  airflow-scheduler:
-    <<: *airflow-common
-    container_name: airflow-scheduler
-
-  # ...với các service còn lại
-
-  postgres:
-    image: postgres:13
-    container_name: airflow-postgres
-    volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
-```
-
-⛔ Không áp dụng `<<: *airflow-common` cho `postgres`, `redis`, hoặc `nginx`.
-
----
-
-## 2. Docker Named Volume: `postgres-db-volume`
-
-Volume này được Docker quản lý và **không cần tạo thủ công**.
-
-### Backup volume ra file `.tar.gz`:
-
-```bash
-docker run --rm \
-  -v airflow_bvb_postgres-db-volume:/volume \
-  -v $(pwd)/db_backup:/backup \
-  alpine \
-  tar czf /backup/postgres_data_backup.tar.gz -C /volume .
-```
-
-### Restore lại:
-
-```bash
-docker volume create airflow_bvb_postgres-db-volume
-
-docker run --rm \
-  -v airflow_bvb_postgres-db-volume:/volume \
-  -v $(pwd)/db_backup:/backup \
-  alpine \
-  tar xzf /backup/postgres_data_backup.tar.gz -C /volume
-```
-
----
-
-## 3. Lưu ý khi scale worker
-
-Không dùng `container_name` nếu muốn scale nhiều worker:
-```yaml
-services:
-  airflow-worker:
-    # Không đặt container_name nếu muốn scale
-```
-Scale worker:
-```bash
-docker compose up --scale airflow-worker=2
-```
-
----
-
-## 4. Production Deployment (Recommended)
+## 2. Production Deployment (Recommended)
 
 | Service       | Nên tách ra? | Ghi chú               |
 | ------------- | ------------ | --------------------- |
@@ -320,7 +207,7 @@ docker compose up --scale airflow-worker=2
 
 ---
 
-## 5. Công cụ production nên dùng
+## 3. Công cụ production nên dùng
 
 - Docker Compose (dev/staging)
 - Kubernetes (Helm chart Airflow)
@@ -330,7 +217,7 @@ docker compose up --scale airflow-worker=2
 
 ---
 
-## 6. So sánh Docker Compose vs Cài Service Truyền Thống
+## 4. So sánh Docker Compose vs Cài Service Truyền Thống
 
 | Tiêu chí          | Docker Compose   | Cài nhiều service |
 | ----------------- | ---------------- | ----------------- |
@@ -342,16 +229,7 @@ docker compose up --scale airflow-worker=2
 
 ---
 
-## 7. Tag và Push Image
-
-```bash
-docker tag airflow-nptan:1.0.0 your_dockerhub_user/airflow-nptan:1.0.0
-docker push your_dockerhub_user/airflow-nptan:1.0.0
-```
-
----
-
-# 📁 scripts/, nginx.conf & .env Usage
+# [📁 scripts/, nginx.conf & .env Usage](mount_folder.md)
 
 ## 1. scripts/
 
@@ -362,69 +240,21 @@ Chứa các shell/Python script hỗ trợ Airflow như:
 - `healthcheck.sh`: Kiểm tra tình trạng container
 - `generateKey.py`: Sinh key mã hoá, dùng trong DAG
 
-> 📌 Đảm bảo file `.sh` có quyền chạy:
-```bash
-chmod +x scripts/*.sh
-```
-
 ---
 
 ## 2. nginx.conf
 
 Cấu hình NGINX làm reverse proxy cho Airflow Webserver:
 
-```nginx
-server {
-    listen 80;
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-Mount file vào container:
-```yaml
-services:
-  access-hot-proxy:
-    image: nginx
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    ports:
-      - "80:80"
-```
-
----
 
 ## 3. File `.env`
 
 Quản lý biến môi trường riêng biệt theo từng máy hoặc môi trường:
 
-Ví dụ `.env.mac`:
-```env
-AIRFLOW_IMAGE_NAME=apache/airflow:2.10.5-python3.12
-AIRFLOW_UID=501
-AIRFLOW_GID=20
-_AIRFLOW_WWW_USER_USERNAME=tanp
-_AIRFLOW_WWW_USER_PASSWORD=Vccb1234
-```
-
-Sử dụng `.env` trong `docker-compose.yml`:
-```yaml
-env_file: .env
-```
-
-Copy file:
-```bash
-cp .env.mac .env  # macOS
-# hoặc
-Copy-Item .env.windows -Destination .env  # Windows PowerShell
-```
 
 ---
 
-# 📂 DAGs, Dockerfile, và CI/CD cho Airflow
+# [📂 DAGs, Dockerfile, và CI/CD cho Airflow](mount_folder.md)
 
 ## 1. DAGs – Tập tin điều khiển workflow
 
@@ -546,7 +376,7 @@ class MyAirflowPlugin(AirflowPlugin):
 
 ---
 
-## 2. Lệnh quản lý Airflow (CLI)
+## [2. Lệnh quản lý Airflow (CLI)](Airflow_cli_cmd.md)
 
 Cơ bản:
 ```bash
@@ -588,7 +418,7 @@ Truy cập web UI qua:
 
 ```bash
 Username: tanp
-Password: Vccb1234
+Password: Abcd1234
 ```
 
 ## Các thành phần chính trên Web UI
@@ -778,6 +608,7 @@ Nếu workload yêu cầu < 5 phút/dữ liệu – dùng Prefect, Flink hoặc 
 
 - [Apache Airflow Docs](https://airflow.apache.org/docs/)
 - [Helm Chart Airflow](https://github.com/apache/airflow/tree/main/chart)
+- [📘 Xem tài liệu chi tiết](doc/README.md)
 
 ---
 

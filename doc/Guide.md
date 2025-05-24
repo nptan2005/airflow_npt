@@ -18,6 +18,64 @@
 - [Sinh fernet_key cho Airflow](#sinh-fernet_key-cho-airflow)
 - [Tạo chứng chỉ tự ký (SSL)](#tạo-chứng-chỉ-tự-ký-ssl)
 
+# 📚 Airflow Project Documentation
+
+## 📌 Tổng quan & Hướng dẫn
+
+- [📖 Tổng quan Airflow](README_overview_airflow.md)
+- [🛠️ Hướng dẫn sử dụng Airflow](README_airflow_guide.md)
+- [🔌 Topology & CICD](README_airflow_topology_cicd.md)
+- [🧱 DAGs, Dockerfile & CI/CD](README_dags_dockerfile_cicd.md)
+- [⚙️ Scripts, ENV & NGINX](README_scripts_env_nginx.md)
+- [⚙️ Hướng dẫn thiết lập môi trường Airflow cho phát triển](setup_airflow_dev_guide.md)
+- [📘 Airflow Production & Development Setup Guide](docs/Airflow_Production_and_Development_Setup_Guide.md)
+- [📁 scripts/, nginx.conf & .env Usage (mount folder)](mount_folder.md)
+
+## CMD/CLI
+- [🛠 Lệnh quản lý Airflow (CLI)](Airflow_cli_cmd.md)
+
+## 🔐 FERNET Key & Bảo mật
+
+- [🔑 Hướng dẫn tạo FERNET Key](Airflow_FERNET_KEY_Guide.md)
+- [🔐 Tích hợp FERNET vào Secret Manager](Airflow_FERNET_KEY_Secret_Integration.md)
+
+## 🚀 CI/CD & Triển khai
+
+- [🎯 CI/CD theo môi trường](ci_cd_env.md)
+- [🚀 Auto reload DAG & Plugin dev](auto_reload_dev.md)
+- [🚢 Production CI/CD Reload](Airflow_Prod_Ci_Reload.md)
+- [🔐 CICD & Secret Integration](Airflow_CICD_Secrets_Integration.md)
+- [🔁 CI/CD mẫu với GitHub Actions](ci_cd_template_withGithud.md)
+- [Secrets CI/CD cần thiết](Secrets_CI_CD_need.md)
+
+## ☁️ Cloud & Observability
+
+- [🌐 Cloud GCP & AWS Integration](cloud_gcp_aws.md)
+- [📈 Kết nối Prometheus/Grafana](prometheus_grafana.md)
+
+## 🧪 Logging & Config
+
+- [🧰 Thiết lập Logging nâng cao](setup_airflow_logging_config.md)
+- [🔧 Fix lỗi config logging module](fix_logging_config_module_not_found.md)
+- [🐞 Fix lỗi snapshot Docker layer](fix-docker-snapshot-error.md)
+- [🔁 Config & Khởi động lại service](config_and_restart.md)
+
+## 📦 Helm & SSL
+
+- [⛵ Cấu hình Helm Chart](helm_chart.md)
+- [🔐 Cấu hình SSL/HTTPS với OpenSSL](SSL_OpenSSL.md)
+
+## ✅ Thủ thuật
+- [Tự động reload DAGs/Plugin khi phát triển](plugin_reload_dev.md)
+- [Hướng Dẫn Xử Lý Lỗi Airflow Init, Logging và FERNET_KEY](airflow_logging_fernet_guide.md)
+
+## Troubleshooting
+- [🔧 troubleshooting](troubleshooting.md)
+
+
+## 📂 Tổng hợp (Index)
+
+- [📋 Guide tổng hợp](Guide.md)
 ---
 
 ## Thiết lập biến môi trường
@@ -122,6 +180,7 @@ docker exec -it airflow-project-airflow-scheduler-1 bash
 ```
 
 ### I. Xoá các images airflow cũ
+
 ```bash
 docker rmi airflow_bvb-airflow-webserver \
            airflow_bvb-airflow-scheduler \
@@ -129,6 +188,47 @@ docker rmi airflow_bvb-airflow-webserver \
            airflow_bvb-airflow-init \
            airflow_bvb-flower
 ```
+
+## Fix "image already exists"
+
+###  Truy dấu container/image đang giữ tag
+
+```bash
+docker images | grep airflow-nptan
+docker ps -a | grep airflow
+```
+
+### I (*) 🔥 Lệnh xóa sạch dữ liệu Và build lại
+
+```bash
+# Dừng và xóa toàn bộ container, volume
+docker compose down -v --remove-orphans
+
+# (Tuỳ chọn) Xóa image nếu muốn build lại từ đầu
+docker image rm airflow-nptan:1.0.0
+
+# Sau đó rebuild
+docker compose build --no-cache
+docker compose up -d
+```
+
+### I (**) 📌 Nếu chỉ muốn xóa riêng volume PostgreSQL 
+
+```bash
+docker volume rm airflow_npt_postgres-db-volume
+```
+Kiểm tra
+
+```bash
+docker volume ls
+```
+### 🔥 I (***): Xoá cache build (rất quan trọng):
+
+```bash
+docker builder prune -a
+```
+### ⛔️ Cảnh báo: Lệnh này sẽ xoá toàn bộ cache build của Docker, nên cần xác nhận bằng y.
+
 
 ---
 
@@ -394,3 +494,6 @@ openssl req -x509 -nodes -days 365 \
   -out ./nginx/ssl/localhost.crt \
   -subj "/C=VN/ST=Dev/L=Localhost/O=MyCompany/OU=Dev/CN=localhost"
 ```
+
+**✍️ Tác giả:** nptan2005
+**📅 Created:** 2025-04-19
