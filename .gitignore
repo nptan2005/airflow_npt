@@ -155,4 +155,7 @@ cython_debug/
 #cache
 **/__pycache__/
 **/.pytest_cache/
+.env
+
+.vscode/settings.json
 

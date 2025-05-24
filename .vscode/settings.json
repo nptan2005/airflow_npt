@@ -8,22 +8,21 @@
         // "./sftp_dir",
         // "./out_data",
         // "./logs",
-        "D:\\WorkSpace\\Python\\airflow-project\\plugins",
-        "D:\\WorkSpace\\Python\\airflow-project\\dags",
-        "D:\\WorkSpace\\Python\\airflow-project\\config",
-        "D:\\WorkSpace\\Python\\airflow-project\\modules",
-        "D:\\WorkSpace\\Python\\airflow-project\\scripts"
-        // "D:\WorkSpace\Python\airflow-project\out_data",
-        // "D:\WorkSpace\Python\airflow-project\logs",
-        // "D:\WorkSpace\Python\airflow-project\sftp_dir"
+        "/Users/nptan2005/SourceCode/Python/airflow_npt/plugins",
+        "/Users/nptan2005/SourceCode/Python/airflow_npt/dags",
+        "/Users/nptan2005/SourceCode/Python/airflow_npt/config",
+        "/Users/nptan2005/SourceCode/Python/airflow_npt/modules",
+        "/Users/nptan2005/SourceCode/Python/airflow_npt/scripts"
+        // "/Users/nptan2005/SourceCode/Python/airflow_npt/out_data",
+        // "/Users/nptan2005/SourceCode/Python/airflow_npt/logs",
+        // "/Users/nptan2005/SourceCode/Python/airflow_npt/sftp_dir"
     ],
-    // Nếu bạn dùng virtual environment tạo bằng venv hoặc conda nằm trong ./venv
-    "python.pythonPath": "${workspaceFolder}\\env\\Scripts\\python.exe",
+    "python.pythonPath": "${workspaceFolder}/venv/bin/python",
     "files.exclude": {
         "**/.git": false,
         "**/.env*": false,
         "**/__pycache__": false
-    },
+    }
     // "files.associations": {
     //     "*.py": "python",
     //     "*.txt": "plaintext"

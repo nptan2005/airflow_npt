@@ -8,12 +8,13 @@ x-airflow-common: &airflow-common
     context: .
     dockerfile: ./airflow.Dockerfile
     args:
-      AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.5-python3.12}
+      # AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.5-python3.12}
+      AIRFLOW_IMAGE_NAME: ${AIRFLOW_IMAGE_NAME}
   environment: &airflow-common-env # AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.session,airflow.api.auth.backend.basic_auth
@@ -22,6 +23,20 @@ x-airflow-common: &airflow-common
     AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
     AIRFLOW__WEBSERVER__RATELIMIT_STORAGE_URL: redis://redis:6379/0
     AIRFLOW__FAB__UPDATE_FAB_PERMS: True
+    AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: "false"  # Giúp scheduler không chạy DAG đã lùi quá nhiều (nếu không cần)
+    AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "30"  # Kiểm tra DAG mới sau mỗi 30s (giảm load so với mặc định là 5s)
+    AIRFLOW__CORE__PARALLELISM: "32"                 # Tổng số task song song có thể chạy, điều chỉnh theo tài nguyên
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: "4"         # Số lượng task mỗi worker có thể chạy song song
+    AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "1"      # Tránh chạy nhiều DAG cùng lúc, tránh trùng lặp task
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"        # Hiện/Ẩn thông tin cấu hình khỏi UI, tăng bảo mật
+    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"     # Bắt buộc nếu bạn dùng reverse proxy (nginx)
+    AIRFLOW__WEBSERVER__COOKIE_SECURE: "True"        # Dùng HTTPS
+    AIRFLOW__WEBSERVER__COOKIE_SAMESITE: "Lax"
+    AIRFLOW__WEBSERVER__COOKIE_HTTPONLY: "True"
+    AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"     # Hoặc DEBUG khi cần gỡ lỗi
+    AIRFLOW__CORE__LOGGING_CONFIG_CLASS: "airflow.utils.log.logging_mixin.DEFAULT_LOGGING_CONFIG"
+    AIRFLOW__SCHEDULER__USE_JOB_SCHEDULE: "True"
+    AIRFLOW__CORE__ENABLE_XCOM_PICKLING: "false" #True: Cho phép sử dụng pickle (có thể gây rủi ro bảo mật nếu không kiểm soát được dữ liệu). / False: Sử dụng JSON để serialize (an toàn hơn). >>> =False để tăng cường bảo mật.
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
     AIRFLOW__CORE__PLUGINS_FOLDER: /opt/airflow/plugins
     PYTHONPATH: /opt/airflow/plugins:/opt/airflow/dags:/opt/airflow/modules:/opt/airflow/config:/opt/airflow/scripts:$PYTHONPATH
@@ -50,6 +65,8 @@ services:
   postgres:
     image: postgres:13
     # container_name: airflow-postgres
+    mem_limit: ${POSTGRES_MEM}
+    cpus: ${POSTGRES_CPU}
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -66,6 +83,8 @@ services:
   redis:
     image: redis:latest
     # container_name: airflow-redis
+    mem_limit: ${REDIS_MEM}
+    cpus: ${REDIS_CPU}
     ports:
       - "6379:6379"
     networks:
@@ -80,6 +99,8 @@ services:
   airflow-webserver:
     <<: *airflow-common
     # container_name: airflow-webserver
+    mem_limit: ${AIRFLOW_WEB_MEM}  #1500m
+    cpus: ${AIRFLOW_WEB_CPU}   #1.5
     command: webserver
     ports:
       - 8080:8080
@@ -99,6 +120,8 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     container_name: airflow-scheduler
+    mem_limit: ${AIRFLOW_SCHED_MEM}
+    cpus: ${AIRFLOW_SCHED_CPU}
     command: scheduler
     networks:
       - airflow-network
@@ -120,6 +143,8 @@ services:
   airflow-worker:
     <<: *airflow-common
     # container_name: airflow-worker
+    mem_limit: ${AIRFLOW_WORKER_MEM}
+    cpus: ${AIRFLOW_WORKER_CPU}
     command: celery worker
     networks:
       - airflow-network
@@ -128,6 +153,8 @@ services:
   airflow-init:
     <<: *airflow-common
     # container_name: airflow-init
+    mem_limit: ${AIRFLOW_INIT_MEM}
+    cpus: ${AIRFLOW_INIT_CPU}
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -197,6 +224,8 @@ services:
   airflow-cli:
     <<: *airflow-common
     # container_name: airflow-cli
+    mem_limit: ${AIRFLOW_CLI_MEM}
+    cpus: ${AIRFLOW_CLI_CPU}
     profiles:
       - debug
     environment:
@@ -210,13 +239,30 @@ services:
   acess-host-proxy:
     image: nginx:latest
     # container_name: access-host-proxy
+    mem_limit: ${NGINX_MEM}
+    cpus: ${NGINX_CPU}
     network_mode: host # Đảm bảo sử dụng IP của server
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - airflow-webserver
     restart: always
+  haproxy:
+    image: haproxy:latest
+    mem_limit: ${HAPROXY_MEM}
+    cpus: ${HAPROXY_CPU}
+    ports:
+      # - "443:443"
+      - "5432:5432"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./haproxy/certs/server.pem:/usr/local/etc/haproxy/server.pem:ro
   flower:
     <<: *airflow-common
     # container_name: airflow-flower
+    mem_limit: ${AIRFLOW_FLOWER_MEM}
+    cpus: ${AIRFLOW_FLOWER_CPU}
     command: celery flower
     networks:
       - airflow-network

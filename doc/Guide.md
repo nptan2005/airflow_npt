@@ -14,7 +14,7 @@ $env:AIRFLOW_HOME="D:\WorkSpace\Python\airflow-project"
 
 - URL: [http://localhost:8080/login](http://localhost:8080/login)
 - Username: `tanp`
-- Password: `Vccb1234`
+- Password: `Abcd1234`
 
 ---
 
@@ -400,4 +400,25 @@ docker tag e6f415a2ae43 airflow-custom:latest
 
 ```bash
 docker build -t my-image:latest .
+```
+
+
+### fernet_key =
+	•	⚠️ trên airflow.cfg fernet_key đang để trống. Airflow dùng key này để mã hóa các mật khẩu trong connection. Hãy sinh một khóa bằng lệnh:
+
+```bash
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+
+# Tạo chứng chỉ tự ký (self-signed SSL)
+
+```bash
+mkdir -p nginx/ssl
+
+openssl req -x509 -nodes -days 365 \
+  -newkey rsa:2048 \
+  -keyout ./nginx/ssl/localhost.key \
+  -out ./nginx/ssl/localhost.crt \
+  -subj "/C=VN/ST=Dev/L=Localhost/O=MyCompany/OU=Dev/CN=localhost"
 ```
