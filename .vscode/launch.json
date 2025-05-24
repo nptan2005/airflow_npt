@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/dags/export_to_excel_dag.py", // Đường dẫn tới file DAG
             "env": {
-                "AIRFLOW_HOME": "${workspaceFolder}/airflow_home", // Đường dẫn tới Airflow Home
+                "AIRFLOW_HOME": "${workspaceFolder}/airflow_npt", // Đường dẫn tới Airflow Home
                 "PYTHONPATH": "${workspaceFolder}/plugins:${workspaceFolder}/dags"
             },
             "console": "integratedTerminal"

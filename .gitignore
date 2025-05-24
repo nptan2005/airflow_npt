@@ -159,4 +159,5 @@ cython_debug/
 
 .vscode/settings.json
 .vscode/launch.json
+.bin/*
 
