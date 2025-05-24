@@ -34,7 +34,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__WEBSERVER__COOKIE_SAMESITE: "Lax"
     AIRFLOW__WEBSERVER__COOKIE_HTTPONLY: "True"
     AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"     # Hoặc DEBUG khi cần gỡ lỗi
-    AIRFLOW__CORE__LOGGING_CONFIG_CLASS: "airflow.utils.log.logging_mixin.DEFAULT_LOGGING_CONFIG"
+    AIRFLOW__LOGGING__LOGGING_CONFIG_CLASS: airflow_local_settings.LOGGING_CONFIG
     AIRFLOW__SCHEDULER__USE_JOB_SCHEDULE: "True"
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: "false" #True: Cho phép sử dụng pickle (có thể gây rủi ro bảo mật nếu không kiểm soát được dữ liệu). / False: Sử dụng JSON để serialize (an toàn hơn). >>> =False để tăng cường bảo mật.
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags

@@ -1,8 +1,26 @@
 # 🚀 Airflow Project Guide
 
-## 🌍 Environment Setup
+## Mục lục
+- [Thiết lập biến môi trường](#thiết-lập-biến-môi-trường)
+- [Đăng nhập Web UI](#đăng-nhập-web-ui)
+- [Kích hoạt môi trường ảo](#kích-hoạt-môi-trường-ảo)
+- [Cấu hình tên images](#cấu-hình-tên-images)
+- [Docker Commands](#docker-commands)
+- [Kiểm tra trạng thái container & service](#kiểm-tra-trạng-thái-container--service)
+- [Kiểm tra cơ sở dữ liệu PostgreSQL](#kiểm-tra-cơ-sở-dữ-liệu-postgresql)
+- [Kiểm tra và xử lý mạng](#kiểm-tra-và-xử-lý-mạng)
+- [Các lệnh Docker phổ biến](#các-lệnh-docker-phổ-biến)
+- [Các tuỳ chọn hữu ích cho docker run](#các-tuỳ-chọn-hữu-ích-cho-docker-run)
+- [Git Commands](#git-commands)
+- [Tạo file .env theo hệ điều hành](#tạo-file-env-theo-hệ-điều-hành)
+- [Backup/Restore Database](#backuprestore-database)
+- [Xoá image rác (None)](#xoá-image-rác-none)
+- [Sinh fernet_key cho Airflow](#sinh-fernet_key-cho-airflow)
+- [Tạo chứng chỉ tự ký (SSL)](#tạo-chứng-chỉ-tự-ký-ssl)
 
-### 1. Thiết lập biến môi trường
+---
+
+## Thiết lập biến môi trường
 
 ```powershell
 $env:AIRFLOW_HOME="D:\WorkSpace\Python\airflow-project"
@@ -10,7 +28,7 @@ $env:AIRFLOW_HOME="D:\WorkSpace\Python\airflow-project"
 
 ---
 
-## 🔐 Đăng nhập Web UI
+## Đăng nhập Web UI
 
 - URL: [http://localhost:8080/login](http://localhost:8080/login)
 - Username: `tanp`
@@ -18,96 +36,92 @@ $env:AIRFLOW_HOME="D:\WorkSpace\Python\airflow-project"
 
 ---
 
-## 💻 Kích hoạt môi trường ảo
+## Kích hoạt môi trường ảo
 
 - **Windows:**
+    ```bash
+    env\Scripts\activate
+    ```
+- **macOS/Linux (dùng venv):**
+    ```bash
+    source venv/bin/activate
+    ```
+- **macOS/Linux (dùng conda):**
+    ```bash
+    conda activate airflow_env
+    ```
 
-```bash
-env\Scripts\activate
-```
-
-- **macOS:**
-
-```bash
-conda activate ./venv
-```
+---
 
 ## Cấu hình tên images
 
-#### * Cách cấu hình image: Ví du: airflow-nptan:1.0.0 trong docker-compose.yml*
-####🎯 Mục tiêu:
-	*	✅ Build image có tên: airflow-nptan:1.0.0
-	*	✅ Các service Airflow (webserver, scheduler, worker,…) đều dùng chung image này
-	*	✅ Giảm size & số lượng image trong docker images
-### ✅ A. Gán image: trong x-airflow-common:
+**Ví dụ:** airflow-nptan:1.0.0 trong `docker-compose.yml`
 
-- *Trong phần x-airflow-common, chỉnh:*
+**Mục tiêu:**
+- ✅ Build image có tên: `airflow-nptan:1.0.0`
+- ✅ Các service Airflow (webserver, scheduler, worker,…) đều dùng chung image này
+- ✅ Giảm size & số lượng image trong docker images
+
+**Chỉnh trong phần `x-airflow-common`:**
 ```yaml
 x-airflow-common:
   &airflow-common
-  image: airflow-nptan:1.0.0  # 👈 Đây là tên image bạn muốn
+  image: airflow-nptan:1.0.0  # 👈 Tên image mong muốn
   build:
     context: .
     dockerfile: ./airflow.Dockerfile
 ```
 
+**Dọn dẹp Docker:**
 ```bash
-docker system prune -f
+docker system prune -f  # Xoá toàn bộ container, network, image không dùng
 ```
+
+---
 
 ## 🐳 Docker Commands
 
-### A. Build:
+### A. Build image
 ```bash
 docker compose build
 ```
 
-> (Chưa có lệnh cụ thể – bạn có thể bổ sung nếu cần)
-
 ### B. Khởi chạy container
-
 ```bash
 docker compose up -d
 ```
 
 ### C. Dừng container
-
 ```bash
 docker compose down
 ```
 
-##### Remove volumn
-
+### D. Xoá volume database
 ```bash
 docker volume rm postgres-db-volume
 ```
 
-##### down container và xoá volumn
-
-```base
+### E. Dừng container và xoá volume
+```bash
 docker compose down -v
 ```
 
-### D. Khởi tạo Airflow lần đầu
-
+### F. Khởi tạo Airflow lần đầu
 ```bash
-docker-compose up airflow-init
+docker compose up airflow-init
 ```
 
-### E. Tạo mạng Docker bridge
-
+### G. Tạo mạng Docker bridge
 ```bash
 docker network create --driver=bridge airflow-external-bridge
 ```
 
-### F. Truy cập vào container (scheduler)
-
+### H. Truy cập vào container (scheduler)
 ```bash
 docker exec -it airflow-project-airflow-scheduler-1 bash
 ```
 
-### G. Clear up images:
-
+### I. Xoá các images airflow cũ
 ```bash
 docker rmi airflow_bvb-airflow-webserver \
            airflow_bvb-airflow-scheduler \
@@ -121,13 +135,11 @@ docker rmi airflow_bvb-airflow-webserver \
 ## 🧪 Kiểm tra trạng thái container & service
 
 ### Liệt kê container
-
 ```bash
 docker ps -a
 ```
 
 ### Kiểm tra logs webserver
-
 ```bash
 docker logs airflow-project-airflow-webserver-1
 ```
@@ -143,22 +155,25 @@ docker exec -it airflow-project-postgres-1 \
 
 ---
 
+## Kiểm tra init
+
+```bash
+docker logs airflow_npt-airflow-init-1
+```
+
 ## 🌐 Kiểm tra và xử lý mạng
 
 ### Inspect network
-
 ```bash
 docker network inspect airflow-project_default
 ```
 
 ### Ping IP từ container
-
 ```bash
 docker exec -it airflow-project-airflow-webserver-1 ping 172.26.1.32
 ```
 
 ### SSH & mở cổng truy cập database
-
 ```bash
 ssh airflow@172.26.1.32
 sudo ufw allow from 172.26.0.0/16 to any port 5432
@@ -166,143 +181,100 @@ netstat -tuln | grep 5432
 ```
 
 ### Dọn dẹp network không dùng
-
 ```bash
 docker network prune
 ```
 
 ### Chạy Airflow webserver dưới dạng background
-
 ```bash
 airflow webserver -d
 ```
 
-
-
-# 🐳 Docker Commands & Useful Options
-
-## 📌 Commonly Used Docker Commands
-
-### 🔍 `docker ps`
-Liệt kê các container đang chạy.
-
-**Tùy chọn**:
-- `-a`, `--all`: Hiển thị tất cả container (đang chạy và đã dừng).
-- `-q`, `--quiet`: Chỉ hiện ID của container.
-
 ---
 
-### 📥 `docker pull`
-Tải một image từ Docker Hub.
+# 🐳 Các lệnh Docker phổ biến
 
-**Ví dụ**:
+### `docker ps`
+Liệt kê các container đang chạy.
+- `-a`: Hiển thị tất cả container (đang chạy và đã dừng)
+- `-q`: Chỉ hiện ID của container
+
+### `docker pull`
+Tải một image từ Docker Hub.
 ```bash
 docker pull nginx
 docker pull mysql
 ```
 
----
-
-### 🛠️ `docker build`
+### `docker build`
 Build một image từ Dockerfile.
-
-**Ví dụ**:
 ```bash
 docker build -t your_name_container .
 ```
 
----
-
-### 🚀 `docker run`
+### `docker run`
 Chạy container từ image có sẵn.
-
-**Ví dụ**:
 ```bash
-docker run image_name -it bash
+docker run -it image_name bash
 ```
 
----
-
-### 📄 `docker logs`
+### `docker logs`
 Xem log từ container.
-
-**Ví dụ**:
 ```bash
 docker logs --follow your_name_container
 ```
 
----
-
-### 💾 `docker volume ls`
+### `docker volume ls`
 Liệt kê các volume được sử dụng bởi Docker.
 
----
-
-### 🗑️ `docker rm`
+### `docker rm`
 Xóa một hoặc nhiều container.
-
-**Ví dụ**:
 ```bash
 docker rm <container_id_or_name>
 ```
 
----
-
-### 🗑️ `docker rmi`
+### `docker rmi`
 Xóa một hoặc nhiều image.
-
-**Ví dụ**:
 ```bash
 docker rmi <image_id>
 ```
 
----
-
-### ⛔ `docker stop`
+### `docker stop`
 Dừng một hoặc nhiều container.
-
-**Ví dụ**:
 ```bash
 docker stop <container_id_or_name>
 ```
-
 Bạn cũng có thể dùng `docker kill` để buộc dừng container.
 
 ---
 
-## ⚙️ Useful Options for `docker run`
+## ⚙️ Các tuỳ chọn hữu ích cho `docker run`
 
-- `--detach`, `-d`: Chạy container ngầm.
-- `--entrypoint`: Ghi đè lệnh mặc định trong image.
-- `--env`, `-e`: Thiết lập biến môi trường (key=value).
-- `--env-file`: Truyền biến môi trường từ file.
-- `--ip`: Gán địa chỉ IP cho container.
-- `--name`: Đặt tên cho container.
-- `--publish`, `-p`: Ánh xạ cổng container với host (VD: `-p 80:80`).
-- `--publish-all`, `-P`: Mở tất cả các cổng.
-- `--rm`: Xóa container sau khi thoát.
-- `--tty`, `-t`: Gán terminal ảo.
-- `--interactive`, `-i`: Mở STDIN.
-- `--volume`, `-v`: Gắn volume vào container.
-
-```bash
-docker run --volume /volume_name image_name bash
-```
-
-- `--workdir`, `-w`: Chỉ định thư mục làm việc trong container.
-
-```bash
-docker run --workdir /app image_name bash
-```
-
-
+- `-d`, `--detach`: Chạy container ngầm
+- `--entrypoint`: Ghi đè lệnh mặc định trong image
+- `-e`, `--env`: Thiết lập biến môi trường (key=value)
+- `--env-file`: Truyền biến môi trường từ file
+- `--ip`: Gán địa chỉ IP cho container
+- `--name`: Đặt tên cho container
+- `-p`, `--publish`: Ánh xạ cổng container với host (VD: `-p 80:80`)
+- `-P`, `--publish-all`: Mở tất cả các cổng
+- `--rm`: Xóa container sau khi thoát
+- `-t`, `--tty`: Gán terminal ảo
+- `-i`, `--interactive`: Mở STDIN
+- `-v`, `--volume`: Gắn volume vào container
+    ```bash
+    docker run --volume /volume_name image_name bash
+    ```
+- `-w`, `--workdir`: Chỉ định thư mục làm việc trong container
+    ```bash
+    docker run --workdir /app image_name bash
+    ```
 
 ---
 
 ## 🧩 Git Commands
 
-### A. Các lệnh cơ bản
-
+### Các lệnh cơ bản
 ```bash
 git status
 git add .
@@ -311,8 +283,7 @@ git commit -m "Mô tả chi tiết về thay đổi"
 git push origin <branch_name>
 ```
 
-### B. Cấu hình Git ban đầu
-
+### Cấu hình Git ban đầu
 ```bash
 git config --global user.name "Tên của bạn"
 git config --global user.email "email@example.com"
@@ -321,51 +292,49 @@ git remote add origin <url_repository_git>
 
 ---
 
-## 🔗 Tạo file .env theo hệ điều hành
+## Tạo file .env theo hệ điều hành
 
 ### macOS
-
 ```bash
 cp .env.mac .env
 ```
 
 ### Windows (PowerShell)
-
 ```powershell
 Copy-Item .env.windows -Destination .env
 ```
 
-### Backup dữ liệu database postgre - container 
+---
 
+## Backup/Restore Database
+
+### Backup dữ liệu database PostgreSQL từ container
 ```bash
 docker exec -t airflow-project-postgres-1 \
   pg_dump -U airflow -d airflow > ./db_backups/backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
-
-### Trường hợp muốn lưu database bên ngoài để ko mất dữ liệu mỗi khi build
-
-```base
+### Lưu database bên ngoài để không mất dữ liệu khi build lại
+```bash
 mkdir -p ./pgdata
 ```
-
-```powershell
+Trong docker-compose:
+```yaml
 volumes:
   - ./pgdata:/var/lib/postgresql/data
 ```
 
-## Backup volumn data postgre ra ngoài
-###📦 1. Export volume ra .tar:
-```base
+### Backup volume data PostgreSQL ra ngoài (export volume ra .tar)
+```bash
 docker run --rm \
   -v airflow_bvb_postgres-db-volume:/volume \
   -v $(pwd)/db_backup:/backup \
   alpine \
   tar czf /backup/postgres_data_backup.tar.gz -C /volume .
 ```
-###🔁 3. Restore trên máy dev khác:
 
-```base
+### Restore volume trên máy dev khác
+```bash
 # Tạo volume mới (nếu chưa có)
 docker volume create airflow_bvb_postgres-db-volume
 
@@ -376,42 +345,45 @@ docker run --rm \
   alpine \
   tar xzf /backup/postgres_data_backup.tar.gz -C /volume
 ```
-# Image rác (None)
-## Cách xóa toàn bộ images <none>:
-### 1. Xóa các images <none>: Chạy lệnh sau để xóa tất cả các dangling images:
+
+---
+
+## Xoá image rác (None)
+
+### Xoá các images <none> (dangling images)
 ```bash
 docker rmi $(docker images -f "dangling=true" -q) --force
 ```
-### 2. Xóa toàn bộ images không cần thiết: Nếu bạn muốn dọn dẹp mọi images không dùng, bao gồm cả dangling và các unused images:
+
+### Xoá toàn bộ images không cần thiết (unused images)
 ```bash
 docker image prune --all --force
 ```
-## Kiểm tra và quản lý hiệu quả:
-### Tag lại image nếu cần: Nếu có image <none> bạn muốn giữ lại, bạn có thể gắn tag lại:
+
+### Tag lại image nếu cần giữ
 ```bash
 docker tag <IMAGE_ID> <REPOSITORY>:<TAG>
-```
-Ví dụ:
-```bash
+# Ví dụ:
 docker tag e6f415a2ae43 airflow-custom:latest
 ```
 
-### Hạn chế tạo dangling images: Trong quá trình build, hãy đảm bảo sử dụng tham số -t để gán tag trực tiếp:
-
+### Hạn chế tạo dangling images khi build
 ```bash
 docker build -t my-image:latest .
 ```
 
+---
 
-### fernet_key =
-	•	⚠️ trên airflow.cfg fernet_key đang để trống. Airflow dùng key này để mã hóa các mật khẩu trong connection. Hãy sinh một khóa bằng lệnh:
+## Sinh fernet_key cho Airflow
 
+⚠️ Trên `airflow.cfg`, nếu `fernet_key` để trống, hãy sinh một khoá mới:
 ```bash
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
+---
 
-# Tạo chứng chỉ tự ký (self-signed SSL)
+## Tạo chứng chỉ tự ký (self-signed SSL)
 
 ```bash
 mkdir -p nginx/ssl

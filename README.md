@@ -4,8 +4,8 @@
 
 ## 1️⃣ Tổng quan
 
-**Apache Airflow** là một nền tảng mã nguồn mở dùng để lập lịch và giám sát luồng công việc (workflow) theo cách lập trình được.  
-Airflow cho phép bạn định nghĩa các DAGs (Directed Acyclic Graphs) — một chuỗi các task có quan hệ phụ thuộc logic — bằng Python.
+**Apache Airflow** là nền tảng mã nguồn mở để lập lịch và giám sát workflow theo cách lập trình.  
+Bạn định nghĩa các DAGs (Directed Acyclic Graphs) — chuỗi các task phụ thuộc logic — bằng Python.
 
 > 🧠 "Viết DAG như viết code, không cần cấu hình phức tạp."
 
@@ -13,43 +13,37 @@ Airflow cho phép bạn định nghĩa các DAGs (Directed Acyclic Graphs) — m
 
 ## 2️⃣ Tính năng nổi bật
 
-
-| Tính năng             | Mô tả                                             |
-|-----------------------|--------------------------------------------------|
-| 🧩 Modular            | Có thể mở rộng bằng plugin, viết operator tùy chỉnh |
-| 🛠 Lập lịch linh hoạt | Dựa trên cron hoặc thời gian tùy chỉnh           |
-| 📊 Web UI mạnh mẽ     | Theo dõi DAG, log, retry task...                 |
-| 💥 Retry, Alert, SLA  | Tự động retry, gửi email khi task fail          |
-| 🧵 Parallel execution | Chạy task song song qua Celery, Kubernetes      |
-| 🔐 RBAC UI            | Phân quyền người dùng rõ ràng                   |
-
+| Tính năng            | Mô tả                                        |
+| -------------------- | -------------------------------------------- |
+| 🧩 Modular            | Mở rộng bằng plugin, viết operator tùy chỉnh |
+| 🛠 Lập lịch linh hoạt | Dựa trên cron hoặc thời gian tùy chỉnh       |
+| 📊 Web UI mạnh mẽ     | Theo dõi DAG, log, retry task...             |
+| 💥 Retry, Alert, SLA  | Tự động retry, gửi email khi task fail       |
+| 🧵 Parallel execution | Chạy task song song qua Celery, Kubernetes   |
+| 🔐 RBAC UI            | Phân quyền người dùng rõ ràng                |
 
 ---
 
 ## 3️⃣ Ứng dụng thực tế
 
-
-| Lĩnh vực         | Ứng dụng                                    |
-|------------------|---------------------------------------------|
-| 🎯 Dữ liệu lớn   | ETL, chuẩn hóa dữ liệu, Spark/Hadoop        |
-| 🧪 Khoa học dữ liệu | Training ML model định kỳ                |
-| 🛒 E-commerce     | Tự động hóa báo cáo bán hàng               |
-| 📬 Marketing      | Gửi email hàng loạt theo lịch              |
-| 🧾 Kế toán        | Đối soát dữ liệu, chạy batch jobs          |
-
+| Lĩnh vực           | Ứng dụng                             |
+| ------------------ | ------------------------------------ |
+| 🎯 Dữ liệu lớn      | ETL, chuẩn hóa dữ liệu, Spark/Hadoop |
+| 🧪 Khoa học dữ liệu | Training ML model định kỳ            |
+| 🛒 E-commerce       | Tự động hóa báo cáo bán hàng         |
+| 📬 Marketing        | Gửi email hàng loạt theo lịch        |
+| 🧾 Kế toán          | Đối soát dữ liệu, chạy batch jobs    |
 
 ---
 
 ## 4️⃣ Khả năng mở rộng
 
-| Mode                | Đặc điểm                                             |
-|---------------------|------------------------------------------------------|
-| SequentialExecutor  | Chạy tuần tự – chỉ dùng khi test                     |
-| LocalExecutor       | Chạy song song trong 1 máy                           |
-| CeleryExecutor      | Scale bằng nhiều worker, sử dụng Redis/RabbitMQ      |
-| KubernetesExecutor  | Tự động spawn pod cho từng task – lý tưởng cho cloud |
-
-
+| Mode               | Đặc điểm                                             |
+| ------------------ | ---------------------------------------------------- |
+| SequentialExecutor | Chạy tuần tự – chỉ dùng khi test                     |
+| LocalExecutor      | Chạy song song trong 1 máy                           |
+| CeleryExecutor     | Scale bằng nhiều worker, sử dụng Redis/RabbitMQ      |
+| KubernetesExecutor | Tự động spawn pod cho từng task – lý tưởng cho cloud |
 
 ---
 
@@ -78,32 +72,22 @@ Airflow cho phép bạn định nghĩa các DAGs (Directed Acyclic Graphs) — m
                           PostgreSQL/MySQL (Metadata DB)
 ```
 
-### 📦 Mô tả chi tiết:
+| Thành phần  | Mô tả                              | Tính năng chính                           |
+| ----------- | ---------------------------------- | ----------------------------------------- |
+| Webserver   | Giao diện người dùng (Flask)       | Xem DAG, trigger, log                     |
+| Scheduler   | Lập lịch DAG theo thời gian        | Theo dõi trạng thái & lên lịch task       |
+| Worker      | Thực thi task DAG                  | Có thể scale hàng chục                    |
+| Broker      | Giao tiếp giữa Scheduler và Worker | Redis hoặc RabbitMQ                       |
+| Metadata DB | Lưu trạng thái, DAG, task...       | Cực kỳ quan trọng, không được mất dữ liệu |
+| Flower      | Monitor queue Celery               | Xem queue, retry, trạng thái worker       |
 
-
-| Thành phần   | Mô tả                                | Tính năng chính                           |
-|--------------|--------------------------------------|-------------------------------------------|
-| Webserver    | Giao diện người dùng (Flask)         | Xem DAG, trigger, log                     | 
-| Scheduler    | Lập lịch DAG theo thời gian          | Theo dõi trạng thái & lên lịch task       |
-| Worker       | Thực thi task DAG                    | Có thể scale hàng chục                    |
-| Broker       | Giao tiếp giữa Scheduler và Worker   | Redis hoặc RabbitMQ                       |
-| Metadata DB  | Lưu trạng thái, DAG, task...         | Cực kỳ quan trọng, không được mất dữ liệu |
-| Flower       | Monitor queue Celery                 | Xem queue, retry, trạng thái worker       |
-
+✅ Kiến trúc này phù hợp để scale từ local lên production cloud (GCP, AWS, Azure).
 
 ---
-
-✅ Với kiến trúc này, Airflow rất phù hợp để scale từ máy local lên production cloud (GCP, AWS, Azure).
-
------------------------------------------------------------------------------
 
 # ⚙️ Mô hình triển khai Apache Airflow theo Docker & Microservices + CI/CD
 
----
-
 ## 🧭 Mục tiêu
-
-Mô hình hoá hệ thống Airflow linh hoạt, hiện đại theo kiến trúc **microservices**, kết hợp với CI/CD để:
 
 - ✅ Tự động build, push, deploy images
 - ✅ Tách biệt từng thành phần trong container
@@ -115,62 +99,48 @@ Mô hình hoá hệ thống Airflow linh hoạt, hiện đại theo kiến trúc
 ## 🧱 Mô hình tổng quan hệ thống
 
 ```plaintext
-                              [ GitHub / GitLab ]
-                                       |
-                                       v
-                             +------------------+
-                             |   CI/CD Pipeline |
-                             | (GitHub Actions) |
-                             +------------------+
-                                       |
-        -------------------------------------------------------
-        |                      |                              |
-        v                      v                              v
- [Docker Build]       [Unit test DAGs]             [Push image airflow-nptan:tag]
-        |
-        v
-[docker-compose-prod.yaml / Kubernetes Helm chart]
-        |
-        v
-    +------------------------+      +--------------------+
-    |  airflow-webserver     | <--> |  nginx proxy (TLS) |
-    +------------------------+      +--------------------+
-        |
-        v
-+--------------------------+
-|  airflow-scheduler       |
-+--------------------------+
-        |
-        v
-+--------------------------+
-| Redis / RabbitMQ Broker  |
-+--------------------------+
-        |
-        v
-+--------------------------+
-|  airflow-worker(s)       | <---- scale horizontally
-+--------------------------+
-        |
-        v
-+--------------------------+
-| PostgreSQL (metadata DB) |
-+--------------------------+
+[GitHub/GitLab] → CI/CD Pipeline → Build/Push Image → Deploy (docker-compose/K8s)
+         |
+         v
+   +------------------------+      +--------------------+
+   |  airflow-webserver     | <--> |  nginx proxy (TLS) |
+   +------------------------+      +--------------------+
+         |
+         v
+   +--------------------------+
+   |  airflow-scheduler       |
+   +--------------------------+
+         |
+         v
+   +--------------------------+
+   | Redis / RabbitMQ Broker  |
+   +--------------------------+
+         |
+         v
+   +--------------------------+
+   |  airflow-worker(s)       | <---- scale horizontally
+   +--------------------------+
+         |
+         v
+   +--------------------------+
+   | PostgreSQL (metadata DB) |
+   +--------------------------+
 ```
 
 ---
 
 ## 🧩 Thành phần & vai trò
 
-| Thành phần         | Vai trò           |
-|--------------------|-----------------------------|
-| **GitHub CI/CD**   | Kiểm thử, build, push image |
-| **Docker Compose / K8s** | Triển khai Airflow stack |
-| **Nginx proxy**    | Reverse proxy, SSL |
-| **Webserver**      | Giao diện quản trị |
-| **Scheduler**      | Lập lịch DAG |
-| **Worker(s)**      | Thực thi task (scale) |
-| **Redis**          | Queue broker |
-| **PostgreSQL**     | Lưu trạng thái DAG/task |
+| Thành phần             | Vai trò                     |
+| ---------------------- | --------------------------- |
+| **GitHub CI/CD**       | Kiểm thử, build, push image |
+| **Docker Compose/K8s** | Triển khai Airflow stack    |
+| **Nginx proxy**        | Reverse proxy, SSL          |
+| **Webserver**          | Giao diện quản trị          |
+| **Scheduler**          | Lập lịch DAG                |
+| **Worker(s)**          | Thực thi task (scale)       |
+| **Redis**              | Queue broker                |
+| **PostgreSQL**         | Lưu trạng thái DAG/task     |
 
 ---
 
@@ -214,19 +184,18 @@ jobs:
 
 ## 🔐 Secrets CI/CD cần thiết
 
-| Tên biến | Mô tả |
-|----------|------|
-| `DOCKER_USER` | Docker Hub username |
+| Tên biến      | Mô tả                     |
+| ------------- | ------------------------- |
+| `DOCKER_USER` | Docker Hub username       |
 | `DOCKER_PASS` | Docker Hub password/token |
 | `SSH_KEY`     | Private key deploy server |
-| `HOST`        | IP/FQDN của máy chủ |
-| `USER`        | User SSH |
+| `HOST`        | IP/FQDN của máy chủ       |
+| `USER`        | User SSH                  |
 
 ---
 
 ## 🔄 DAG Sync mô hình production
 
-### Cách phổ biến:
 1. Mount volume từ NFS chứa DAG
 2. Đồng bộ DAG từ Git về container bằng `git pull` + cron
 3. Dùng `airflow-dags-git-sync` hoặc sidecar container (K8s)
@@ -239,16 +208,15 @@ jobs:
 - Có quy trình CI/CD mạnh mẽ
 - Tối ưu hiệu năng và khả năng mở rộng
 
+---
 
-
------------------------------------------------------------------------------
 # 📘 Airflow Production & Development Setup Guide
 
-## 📦 1. Docker Compose (Development Mode)
+## 1. Docker Compose (Development Mode)
 
 Docker Compose là cách nhanh gọn để khởi chạy toàn bộ Airflow stack trên 1 máy dev (macOS, Windows, Linux).
 
-### ✅ Cấu trúc điển hình gồm:
+### Cấu trúc điển hình gồm:
 - `airflow-webserver`
 - `airflow-scheduler`
 - `airflow-worker` (scale được)
@@ -258,7 +226,7 @@ Docker Compose là cách nhanh gọn để khởi chạy toàn bộ Airflow stac
 - `redis` (Celery broker)
 - `nginx` (proxy/nginx optional)
 
-### ✅ Image chuẩn:
+### Image chuẩn:
 
 ```yaml
 x-airflow-common:
@@ -269,7 +237,7 @@ x-airflow-common:
     dockerfile: ./airflow.Dockerfile
 ```
 
-### ✅ Clean container names:
+### Clean container names:
 
 ```yaml
 services:
@@ -294,125 +262,120 @@ services:
 
 ---
 
-## 🧩 2. Docker Named Volume: `postgres-db-volume`
+## 2. Docker Named Volume: `postgres-db-volume`
 
 Volume này được Docker quản lý và **không cần tạo thủ công**.
 
-### ✅ Backup volume ra file `.tar.gz`:
+### Backup volume ra file `.tar.gz`:
 
 ```bash
-docker run --rm   -v airflow_bvb_postgres-db-volume:/volume   -v $(pwd)/db_backup:/backup   alpine   tar czf /backup/postgres_data_backup.tar.gz -C /volume .
+docker run --rm \
+  -v airflow_bvb_postgres-db-volume:/volume \
+  -v $(pwd)/db_backup:/backup \
+  alpine \
+  tar czf /backup/postgres_data_backup.tar.gz -C /volume .
 ```
 
-### ✅ Restore lại:
+### Restore lại:
 
 ```bash
 docker volume create airflow_bvb_postgres-db-volume
 
-docker run --rm   -v airflow_bvb_postgres-db-volume:/volume   -v $(pwd)/db_backup:/backup   alpine   tar xzf /backup/postgres_data_backup.tar.gz -C /volume
+docker run --rm \
+  -v airflow_bvb_postgres-db-volume:/volume \
+  -v $(pwd)/db_backup:/backup \
+  alpine \
+  tar xzf /backup/postgres_data_backup.tar.gz -C /volume
 ```
 
 ---
 
-## 🧠 3. Tại sao `container_name` khiến bạn không scale được?
+## 3. Lưu ý khi scale worker
 
+Không dùng `container_name` nếu muốn scale nhiều worker:
 ```yaml
 services:
   airflow-worker:
-    container_name: airflow-worker
+    # Không đặt container_name nếu muốn scale
 ```
-
-→ Khi scale:
-
+Scale worker:
 ```bash
 docker compose up --scale airflow-worker=2
 ```
 
-→ Docker lỗi do **2 container trùng tên**.
+---
 
-### ✅ Giải pháp:
-- ❌ Đừng dùng `container_name` nếu muốn scale
-- ✅ Dùng `-p airflow` để đổi prefix project
+## 4. Production Deployment (Recommended)
+
+| Service       | Nên tách ra? | Ghi chú               |
+| ------------- | ------------ | --------------------- |
+| Webserver     | ✅            | Cho UI riêng          |
+| Scheduler     | ✅            | Đảm bảo trigger       |
+| Worker(s)     | ✅✅✅          | Nên scale             |
+| Redis         | ✅            | Broker                |
+| PostgreSQL    | ✅            | Metadata DB           |
+| Nginx / Proxy | ✅            | TLS, route            |
+| Flower        | ✅            | Giám sát task         |
+| DAG Storage   | ✅ (optional) | S3/NFS để đồng bộ DAG |
 
 ---
 
-## 🚀 4. Production Deployment (Recommended)
+## 5. Công cụ production nên dùng
 
-| Service         | Nên tách ra? | Ghi chú |
-|----------------|--------------|--------|
-| Webserver      | ✅           | Cho UI riêng |
-| Scheduler      | ✅           | Đảm bảo trigger |
-| Worker(s)      | ✅✅✅       | Nên scale |
-| Redis          | ✅           | Broker |
-| PostgreSQL     | ✅           | Metadata DB |
-| Nginx / Proxy  | ✅           | TLS, route |
-| Flower         | ✅           | Giám sát task |
-| DAG Storage    | ✅ (optional)| S3/NFS để đồng bộ DAG |
+- Docker Compose (dev/staging)
+- Kubernetes (Helm chart Airflow)
+- AWS ECS / GCP GKE / Azure AKS
+- Redis Cluster, PostgreSQL RDS
+- Giám sát: Prometheus, Grafana, Sentry
 
 ---
 
-## ⚙️ Công cụ production nên dùng:
+## 6. So sánh Docker Compose vs Cài Service Truyền Thống
 
-- ✅ Docker Compose (dev/staging)
-- ✅ Kubernetes (Helm chart Airflow)
-- ✅ AWS ECS / GCP GKE / Azure AKS
-- ✅ Redis Cluster, PostgreSQL RDS
-- ✅ Giám sát: Prometheus, Grafana, Sentry
-
----
-
-## 🧠 So sánh Docker Compose vs Cài Service Truyền Thống
-
-| Tiêu chí          | Docker Compose         | Cài nhiều service |
-|------------------|------------------------|-------------------|
-| Dễ quản lý        | ✅                      | ❌ |
-| Backup đơn giản   | ✅ Volume/pg_dump       | ❌ Khó hơn |
-| Scale linh hoạt   | ✅ `--scale`            | ❌ Thủ công |
-| Tách biệt service | ✅                      | ❌ |
-| Dev → Prod dễ     | ✅ Build/Push/Tag       | ❌ |
+| Tiêu chí          | Docker Compose   | Cài nhiều service |
+| ----------------- | ---------------- | ----------------- |
+| Dễ quản lý        | ✅                | ❌                 |
+| Backup đơn giản   | ✅ Volume/pg_dump | ❌ Khó hơn         |
+| Scale linh hoạt   | ✅ `--scale`      | ❌ Thủ công        |
+| Tách biệt service | ✅                | ❌                 |
+| Dev → Prod dễ     | ✅ Build/Push/Tag | ❌                 |
 
 ---
 
-## ✅ Tag và Push Image
+## 7. Tag và Push Image
 
 ```bash
 docker tag airflow-nptan:1.0.0 your_dockerhub_user/airflow-nptan:1.0.0
 docker push your_dockerhub_user/airflow-nptan:1.0.0
 ```
------------------------------------------------------------------------------
 
+---
 
-# 🛠 README: Scripts, nginx.conf & .env Usage
+# 📁 scripts/, nginx.conf & .env Usage
 
-## 📁 1. scripts/
+## 1. scripts/
 
-Thư mục `scripts/` thường chứa các file shell hoặc Python hỗ trợ hệ thống Airflow như:
+Chứa các shell/Python script hỗ trợ Airflow như:
+- `init.sh`: Tạo user, migrate db, khởi tạo lần đầu
+- `backup.sh`: Sao lưu dữ liệu PostgreSQL hoặc DAGs
+- `restore.sh`: Khôi phục dữ liệu từ bản sao lưu
+- `healthcheck.sh`: Kiểm tra tình trạng container
+- `generateKey.py`: Sinh key mã hoá, dùng trong DAG
 
-| Script              | Mục đích |
-|---------------------|----------|
-| `init.sh`           | Tạo user, migrate db, khởi tạo lần đầu |
-| `backup.sh`         | Sao lưu dữ liệu PostgreSQL hoặc DAGs |
-| `restore.sh`        | Khôi phục dữ liệu từ bản sao lưu |
-| `healthcheck.sh`    | Dùng để kiểm tra tình trạng container |
-| `generateKey.py`    | Sinh key mã hoá, dùng trong DAG |
-
-> 📌 Tất cả file `.sh` cần được gán quyền chạy:
+> 📌 Đảm bảo file `.sh` có quyền chạy:
 ```bash
 chmod +x scripts/*.sh
 ```
 
 ---
 
-## 🌐 2. nginx.conf
+## 2. nginx.conf
 
-Cấu hình NGINX làm **reverse proxy** cho Airflow Webserver:
-
-### ✅ Ví dụ cấu hình:
+Cấu hình NGINX làm reverse proxy cho Airflow Webserver:
 
 ```nginx
 server {
     listen 80;
-
     location / {
         proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
@@ -421,8 +384,7 @@ server {
 }
 ```
 
-### 📦 Mount file vào container:
-
+Mount file vào container:
 ```yaml
 services:
   access-hot-proxy:
@@ -433,16 +395,13 @@ services:
       - "80:80"
 ```
 
-> 🔐 Bạn có thể mở rộng với SSL (Let's Encrypt), hoặc định tuyến nhiều domain.
-
 ---
 
-## 🔐 3. File `.env`
+## 3. File `.env`
 
-File `.env` dùng để **quản lý biến môi trường** riêng biệt theo từng máy hoặc môi trường:
+Quản lý biến môi trường riêng biệt theo từng máy hoặc môi trường:
 
-### Ví dụ `.env.mac`:
-
+Ví dụ `.env.mac`:
 ```env
 AIRFLOW_IMAGE_NAME=apache/airflow:2.10.5-python3.12
 AIRFLOW_UID=501
@@ -451,14 +410,12 @@ _AIRFLOW_WWW_USER_USERNAME=tanp
 _AIRFLOW_WWW_USER_PASSWORD=Vccb1234
 ```
 
-### 🔄 Sử dụng `.env` trong `docker-compose.yml`:
-
+Sử dụng `.env` trong `docker-compose.yml`:
 ```yaml
 env_file: .env
 ```
 
-Hoặc dùng trong CLI:
-
+Copy file:
 ```bash
 cp .env.mac .env  # macOS
 # hoặc
@@ -467,27 +424,13 @@ Copy-Item .env.windows -Destination .env  # Windows PowerShell
 
 ---
 
-## ✅ Tổng kết
+# 📂 DAGs, Dockerfile, và CI/CD cho Airflow
 
-| Thành phần | Vai trò | Khuyến nghị |
-|------------|---------|-------------|
-| scripts/   | Tự động hóa quản lý Airflow | Tách biệt logic rõ ràng |
-| nginx.conf | Reverse proxy + SSL         | Mount vào container |
-| .env       | Biến môi trường cấu hình    | Dùng theo từng môi trường |
+## 1. DAGs – Tập tin điều khiển workflow
 
------------------------------------------------------------------------------
-# 🚀 README: DAGs, Dockerfile, và CI/CD cho Airflow
+Thư mục `dags/` chứa các file `.py` định nghĩa workflow và các task của bạn.
 
----
-
-## 📂 1. DAGs – Tập tin điều khiển workflow
-
-### 📁 Thư mục: `dags/`
-
-Chứa các file `.py` định nghĩa workflow và các task của bạn trong Airflow.
-
-### ✅ Cấu trúc DAG cơ bản:
-
+Ví dụ DAG cơ bản:
 ```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -503,24 +446,20 @@ with DAG("sample_dag", start_date=datetime(2023, 1, 1), schedule_interval="@dail
     )
 ```
 
-### 💡 Lưu ý:
-- Tên file `.py` không được chứa ký tự đặc biệt
-- Luôn đặt DAG trong `with DAG(...)` block
-- Gán `dag_id` duy nhất cho mỗi DAG
-
 ---
 
-## 🐳 2. Dockerfile – Định nghĩa image của bạn
+## 2. Dockerfile – Định nghĩa image của bạn
 
-### ✅ Dockerfile chuẩn cho Airflow mở rộng:
-
+Ví dụ Dockerfile chuẩn:
 ```Dockerfile
 ARG AIRFLOW_IMAGE_NAME
 FROM ${AIRFLOW_IMAGE_NAME}
 
 USER root
 
-RUN apt-get update &&     apt-get install -y openjdk-11-jdk &&     apt-get clean
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get clean
 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH="$JAVA_HOME/bin:$PATH"
@@ -530,21 +469,11 @@ COPY airflow.requirements.txt .
 RUN pip install --no-cache-dir -r airflow.requirements.txt
 ```
 
-> 💡 Image base: `apache/airflow:2.10.5-python3.12`
-
 ---
 
-## 🔄 3. CI/CD – Tự động hoá build & deploy
+## 3. CI/CD – Tự động hoá build & deploy
 
-### 🎯 Mục tiêu CI/CD:
-- Tự động build Docker image
-- Push lên Docker Hub
-- Deploy Airflow stack
-
----
-
-### ✅ Ví dụ GitHub Actions workflow (`.github/workflows/airflow.yml`):
-
+Ví dụ GitHub Actions workflow:
 ```yaml
 name: Build & Push Airflow Image
 
@@ -577,48 +506,24 @@ jobs:
         tags: your_dockerhub_user/airflow-nptan:latest
 ```
 
-### ✅ Secrets bạn cần set trong GitHub:
-- `DOCKER_USER`
-- `DOCKER_PASS`
-
 ---
 
-## 🧠 Gợi ý CI/CD nâng cao:
-| Mục tiêu                  | Công cụ |
-|---------------------------|---------|
-| Chạy test DAG             | `pytest`, `airflow dags test` |
-| Lint Python               | `flake8`, `black`              |
-| Triển khai lên production | SSH deploy, AWS ECS, K8s, GKE  |
+# 🔌 Airflow Plugins & Command-line Management
 
----
-
-## ✅ Tổng kết
-
-| Thành phần | Mục tiêu | Ghi chú |
-|------------|----------|--------|
-| DAGs       | Lập lịch và chạy task | Nên kiểm tra bằng `airflow dags test` |
-| Dockerfile | Xây dựng môi trường    | Tách biệt rõ ràng các lib cần thiết |
-| CI/CD      | Tự động hoá build/deploy | Sử dụng GitHub Actions là dễ nhất |
-
------------------------------------------------------------------------------
-# 🔌 README: Airflow Plugins & Command-line Management
-
-## 🔌 1. Airflow Plugins
+## 1. Airflow Plugins
 
 Airflow hỗ trợ plugin để mở rộng tính năng — như thêm operators, sensors, hooks, macros, và Flask views.
 
-### 📁 Cấu trúc thư mục plugins/:
-``` 
+Cấu trúc thư mục plugins/:
+```
 plugins/
 ├── __init__.py
 ├── custom_operator.py
 ├── custom_hook.py
 ├── my_plugin.py
 ```
-	🔁 Airflow sẽ tự động load tất cả các file .py trong plugins/ mỗi lần khởi động.
 
-### ✅ Ví dụ 1: Plugin operator
-
+Ví dụ plugin operator:
 ```python
 # plugins/custom_operator.py
 from airflow.models import BaseOperator
@@ -628,8 +533,7 @@ class HelloOperator(BaseOperator):
         print("Xin chào từ plugin!")
 ```
 
-### ✅ Ví dụ 2: Đăng ký plugin
-
+Đăng ký plugin:
 ```python
 # plugins/my_plugin.py
 from airflow.plugins_manager import AirflowPlugin
@@ -640,9 +544,11 @@ class MyAirflowPlugin(AirflowPlugin):
     operators = [HelloOperator]
 ```
 
-## ⚙️ 2. Lệnh quản lý Airflow (CLI)
+---
 
-### ✅ Cơ bản
+## 2. Lệnh quản lý Airflow (CLI)
+
+Cơ bản:
 ```bash
 airflow db init               # Khởi tạo database lần đầu
 airflow db upgrade            # Cập nhật schema database
@@ -651,46 +557,33 @@ airflow webserver             # Chạy web UI
 airflow scheduler             # Chạy scheduler
 ```
 
-### ✅ DAG management
-
+DAG management:
 ```bash
 airflow dags list                     # Liệt kê các DAG
-airflow dags trigger <dag_id>        # Kích hoạt DAG thủ công
-airflow dags pause <dag_id>          # Dừng chạy DAG theo schedule
-airflow dags unpause <dag_id>        # Cho phép DAG chạy theo schedule
+airflow dags trigger <dag_id>         # Kích hoạt DAG thủ công
+airflow dags pause <dag_id>           # Dừng chạy DAG theo schedule
+airflow dags unpause <dag_id>         # Cho phép DAG chạy theo schedule
 ```
 
-### ✅ Task management
-
+Task management:
 ```bash
 airflow tasks list <dag_id>                           # Liệt kê task trong DAG
 airflow tasks test <dag_id> <task_id> <exec_date>     # Test task cục bộ
 ```
 
-### ✅ Monitoring & Debug
-
+Monitoring & Debug:
 ```bash
 airflow info                  # Xem thông tin cấu hình
 airflow config get-value core dags_folder
 airflow plugins list          # Liệt kê plugin đã được load
 ```
 
-## 🧠 Gợi ý khi dùng plugins:
-
-| **Lưu ý**     | **Mẹo**                               |
-|---------------|---------------------------------------|
-| Load chậm?	| Kiểm tra log khi khởi động webserver  |
-| Debug plugin	| Dùng airflow plugins list             |
-| Reusable code	| Tách rõ file .py trong plugins/       |
-| Reload plugin	| Phải restart webserver/scheduler      |
-
-
------------------------------------------------------------------------------
+---
 
 # 🚀 Giao diện Web Airflow – Tổng Quan
 
-Truy cập web UI qua:
-👉 http://localhost:8080 (mặc định)
+Truy cập web UI qua:  
+👉 http://localhost:8080 (mặc định)  
 Đăng nhập bằng tài khoản bạn đã cấu hình:
 
 ```bash
@@ -698,138 +591,54 @@ Username: tanp
 Password: Vccb1234
 ```
 
-## 🧭 Các thành phần chính trên Web UI
+## Các thành phần chính trên Web UI
 
-| **Mục**                 |	**Mô tả**
-|-------------------------|-----------------------------------------------------------|
-| DAGs	                  | Danh sách các DAG được phát hiện trong thư mục dags/   |
-| Tree View	              | Biểu đồ DAG dạng cây: các task theo ngày chạy    |
-| Graph View	          | DAG hiển thị theo dạng node – giúp dễ hình dung pipeline  |
-| Code	                  | Xem source code Python của DAG  |
-| Trigger DAG	          | Kích hoạt DAG thủ công   |
-| Pause/Unpause	          | Bật/tắt chạy DAG theo schedule  |
-| Admin → Connections     |	Quản lý kết nối đến DB, API, SFTP,…  |
-| Admin → Variables	      | Biến môi trường toàn cục cho DAG  |
-| Admin → Pools	          | Giới hạn số task chạy song song  |
-| Browse → Task Instances |	Theo dõi từng lần chạy của task  |
-| Browse → Logs	          | Xem log task chạy thất bại/thành công  |
-| Browse → DAG Runs	      | Danh sách các lần chạy của mỗi DAG  |
+| Mục                     | Mô tả                                       |
+| ----------------------- | ------------------------------------------- |
+| DAGs                    | Danh sách các DAG trong thư mục dags/       |
+| Tree View               | Biểu đồ DAG dạng cây theo ngày chạy         |
+| Graph View              | DAG hiển thị dạng node – hình dung pipeline |
+| Code                    | Xem source code Python của DAG              |
+| Trigger DAG             | Kích hoạt DAG thủ công                      |
+| Pause/Unpause           | Bật/tắt chạy DAG theo schedule              |
+| Admin → Connections     | Quản lý kết nối đến DB, API, SFTP,…         |
+| Admin → Variables       | Biến môi trường toàn cục cho DAG            |
+| Admin → Pools           | Giới hạn số task chạy song song             |
+| Browse → Task Instances | Theo dõi từng lần chạy của task             |
+| Browse → Logs           | Xem log task chạy thất bại/thành công       |
+| Browse → DAG Runs       | Danh sách các lần chạy của mỗi DAG          |
 
-### 🔧 1. Cấu hình Connections
-    1.	Truy cập: Admin → Connections
-	2.	Nhấn ➕ để tạo kết nối mới
-	3.	Ví dụ tạo kết nối PostgreSQL:
-
-| **Field**    | **Value**
-|--------------|----------------------------------------|
-| Conn Id	   | my_postgres   |
-| Conn Type	   | Postgres   |
-| Host	       | postgres (tên service trong compose)  |
-| Schema	   | airflow  |
-| Login	       | airflow  |
-| Password	   | airflow  |
-| Port	       | 5432  |
-
-
-**🧪 Bạn có thể test bằng Python operator dùng:**
-```python
-PostgresHook(postgres_conn_id="my_postgres")
-```
-
-### 🧰 2. Cấu hình Variables (Admin → Variables)
-
-Dùng để truyền biến toàn cục vào DAG:
-	•	Ví dụ key: email_list
-	•	Value: ["dev@example.com", "admin@example.com"]
-
-Sau đó dùng trong DAG:
-
-```python
-from airflow.models import Variable
-
-emails = Variable.get("email_list", deserialize_json=True)
-```
-
-### 🛑 3. Dừng/Chạy DAG
-
-	*	🔘 Pause DAG: Dừng chạy theo lịch (schedule_interval)
-	*	▶️ Unpause DAG: Bật lại tự động chạy
-	*	🔄 Trigger DAG: Chạy thủ công 1 lần
-
-### 🧪 4. Kiểm tra Log Task
-
-	*	Vào Browse → DAG Runs → Task Instance
-	*	Chọn 1 task → bấm “Log” để xem chi tiết
-	*	Có thể thấy traceback khi task lỗi
-
-### 🔐 5. Thêm người dùng
-
-Từ terminal:
-```bash
-airflow users create \
-  --username admin \
-  --firstname Admin \
-  --lastname User \
-  --role Admin \
-  --email admin@example.com \
-  --password yourpassword
-```
-
-## 📊 Tùy chỉnh Web UI thêm:
-
-	•	Cài theme: pip install airflow-theme
-	•	Sửa favicon/logo: Override Flask template (nâng cao)
-	•	Thêm menu mới: viết plugin flask_blueprint (nâng cao)
-
-## ✅ Kết luận
-
-| **Việc cần làm**         |  	**Thực hiện ở đâu**
-|--------------------------|----------------------------|
-| Tạo DAG, Trigger DAG     | Trang DAGs |
-| Xem log, trạng thái task | Browse → Task Instances |
-| Quản lý DB/API…	       | Admin → Connections |
-| Lưu biến toàn cục	       | Admin → Variables |
-| Tạo người dùng	       | CLI hoặc Admin UI |
-
-
------------------------------------------------------------------------------
-
+---
 
 # ☁️📈 Apache Airflow – Tích hợp với Cloud, Datalake & Machine Learning
 
-## 1️⃣ Khả năng tích hợp với Databricks, Cloud, Data Lake
+## 1. Khả năng tích hợp với Databricks, Cloud, Data Lake
 
-Apache Airflow hỗ trợ kết nối và orchestration với các nền tảng cloud và data lake thông qua các **providers**:
+Airflow hỗ trợ kết nối và orchestration với các nền tảng cloud/data lake qua providers:
 
-| Dịch vụ         | Mô tả hỗ trợ                                 |
-|------------------|---------------------------------------------|
-| Databricks       | Hook, operator để submit job lên DB         |
-| AWS              | S3, EMR, Lambda, ECS, Glue...               |
-| GCP              | BigQuery, Cloud Composer, GKE               |
-| Azure            | Data Lake, Synapse, ML Service              |
-| Snowflake        | Query trực tiếp, run warehouse              |
-| HDFS / MinIO     | Lưu trữ DAG hoặc batch đầu vào              |
+| Dịch vụ      | Mô tả hỗ trợ                        |
+| ------------ | ----------------------------------- |
+| Databricks   | Hook, operator để submit job lên DB |
+| AWS          | S3, EMR, Lambda, ECS, Glue...       |
+| GCP          | BigQuery, Cloud Composer, GKE       |
+| Azure        | Data Lake, Synapse, ML Service      |
+| Snowflake    | Query trực tiếp, run warehouse      |
+| HDFS / MinIO | Lưu trữ DAG hoặc batch đầu vào      |
 
-## 2️⃣ Tích hợp & bổ trợ cho Machine Learning
+---
 
-Airflow là công cụ orchestrator, rất tốt để:
-	•	Xây dựng MLOps pipeline
-	•	Tự động hoá các bước ML:
-	•	Thu thập dữ liệu
-	•	Tiền xử lý
-	•	Train model
-	•	Evaluate
-	•	Deploy
+## 2. Tích hợp & bổ trợ cho Machine Learning
 
-	✅ Dùng tốt với MLflow, Metaflow, hoặc trực tiếp với TensorFlow, scikit-learn…
+Airflow là orchestrator tốt cho MLOps pipeline:
+- Thu thập dữ liệu
+- Tiền xử lý
+- Train model
+- Evaluate
+- Deploy
 
-## 3️⃣ Tích hợp TensorFlow
+Dùng tốt với MLflow, Metaflow, TensorFlow, scikit-learn…
 
- có thể:
-	•	Viết PythonOperator để gọi hàm train model
-	•	Gọi shell script hoặc submit job lên Spark/TensorFlow Cluster
-	•	Ghi log vào MLflow / Neptune / WandB
-
+Ví dụ:
 ```python
 def train_model():
     import tensorflow as tf
@@ -842,67 +651,72 @@ PythonOperator(
     python_callable=train_model
 )
 ```
-## 4️⃣ Ưu nhược điểm của Airflow:
 
-| **Ưu điểm**                      | **Nhược điểm**                         |
-|----------------------------------|----------------------------------------|
-| ✅ Quản lý DAG bằng Python        | ❌ Không tối ưu cho real-time streaming |
-| ✅ Web UI đẹp, dễ dùng            | ❌ Khởi động chậm nếu DAG lớn           |
-| ✅ Hỗ trợ retry, SLA, alert      | ❌ Không tốt cho task cực ngắn          |
-| ✅ Rất nhiều provider cloud       | ❌ Cần cấu hình nhiều nếu dùng K8s      |
-| ✅ Rất mạnh về orchestrate logic | ❌ Không có model registry built-in     |
+---
 
-## 5️⃣ So sánh với các framework khác
+## 3. Ưu nhược điểm của Airflow
 
-| **Tool**              | **Open Source** | **Điểm mạnh**                | **Yếu điểm / Hạn chế**   |
-|-------------------|-------------|--------------------------|--------------------------------------|
-| **Airflow**       | ✅           | Linh hoạt, phổ biến       | Không real-time                      |
-| Prefect           | ✅           | Dễ dùng, DAG như Python   | Giao diện miễn phí còn hạn chế       |
-| Dagster           | ✅           | Typed DAG, Data-aware     | Mới hơn, ít cộng đồng hơn            |
-| Luigi             | ✅           | Nhẹ, ít phụ thuộc         | Không có web UI, đã cũ               |
-| Azure Data Factory| ❌           | Tích hợp Azure tốt        | Không mở rộng, phụ thuộc Microsoft   |
-| GCP Composer      | ❌           | Quản lý airflow trên cloud | Chi phí cao, ít tuỳ biến             |
-| AWS Step Functions| ❌           | Tích hợp Lambda/S3 tốt    | Không viết code thuần Python         |
+| Ưu điểm                    | Nhược điểm                             |
+| -------------------------- | -------------------------------------- |
+| ✅ Quản lý DAG bằng Python  | ❌ Không tối ưu cho real-time streaming |
+| ✅ Web UI đẹp, dễ dùng      | ❌ Khởi động chậm nếu DAG lớn           |
+| ✅ Hỗ trợ retry, SLA, alert | ❌ Không tốt cho task cực ngắn          |
+| ✅ Rất nhiều provider cloud | ❌ Cần cấu hình nhiều nếu dùng K8s      |
+| ✅ Orchestrate logic mạnh   | ❌ Không có model registry built-in     |
 
-## ✅ Đề xuất
+---
 
-| Tình huống                    | Công cụ phù hợp    |
-|-------------------------------|--------------------|
-| Xây dựng ETL/ELT + ML         | **Airflow**        |
-| Workflow đơn giản, realtime   | Prefect, Dagster   |
-| Azure-only                    | Azure Data Factory |
-| ML trên GCP                   | Airflow + BigQuery |
-| MLOps + UI + Tracking         | Airflow + MLflow   |
+## 4. So sánh với các framework khác
 
------------------------------------------------------------------------------
-# Đánh giá về việc khắc phục nhược điểm data streaming của airflow
-# 🔄 Apache Airflow + Streaming: Kafka & Giải pháp thay thế
+| Tool               | Open Source | Điểm mạnh                  | Yếu điểm / Hạn chế                 |
+| ------------------ | ----------- | -------------------------- | ---------------------------------- |
+| Airflow            | ✅           | Linh hoạt, phổ biến        | Không real-time                    |
+| Prefect            | ✅           | Dễ dùng, DAG như Python    | Giao diện miễn phí còn hạn chế     |
+| Dagster            | ✅           | Typed DAG, Data-aware      | Mới hơn, ít cộng đồng hơn          |
+| Luigi              | ✅           | Nhẹ, ít phụ thuộc          | Không có web UI, đã cũ             |
+| Azure Data Factory | ❌           | Tích hợp Azure tốt         | Không mở rộng, phụ thuộc Microsoft |
+| GCP Composer       | ❌           | Quản lý airflow trên cloud | Chi phí cao, ít tuỳ biến           |
+| AWS Step Functions | ❌           | Tích hợp Lambda/S3 tốt     | Không viết code thuần Python       |
 
-## ❓ Vấn đề: Airflow không hỗ trợ Streaming Real-time
+---
 
-*Apache Airflow được thiết kế để xử lý các batch jobs, theo lịch trình định kỳ.*
-***⚠️ Không phù hợp cho xử lý event-driven hoặc streaming real-time như:***
-	•	Consume Kafka message mỗi giây
-	•	Trigger DAG khi có dữ liệu đẩy tới
-	•	Xử lý continuous stream từ IoT, logs…
+## 5. Đề xuất
 
-## 1️⃣ Tích hợp Apache Kafka với Airflow
+| Tình huống                  | Công cụ phù hợp    |
+| --------------------------- | ------------------ |
+| Xây dựng ETL/ELT + ML       | Airflow            |
+| Workflow đơn giản, realtime | Prefect, Dagster   |
+| Azure-only                  | Azure Data Factory |
+| ML trên GCP                 | Airflow + BigQuery |
+| MLOps + UI + Tracking       | Airflow + MLflow   |
 
-### ✅ Mục tiêu:
-	•	Airflow xử lý batch từ Kafka mỗi X phút
-	•	Hoặc Airflow trigger DAG khi detect file/message
-### 📦 Cách tích hợp phổ biến:
+---
 
-|**Cách**	             | **Mô tả** |
-|---------------------|-------------------------------------------------------------------|
-|Kafka Consumer DAG	 | DAG chạy mỗi X phút, dùng hook để lấy batch từ Kafka|
-|Sensor + Kafka	     | Viết custom sensor, check Kafka message rồi trigger task|
-|Kafka → HTTP	     | Kafka push event đến API để trigger Airflow DAG (via REST API)|
-|Kafka → DB → Airflow | Kafka dump vào DB, Airflow dùng ExternalTaskSensor|
+# 🔄 Airflow + Streaming: Kafka & Giải pháp thay thế
 
+## Vấn đề: Airflow không hỗ trợ Streaming Real-time
 
-### 🔧 Ví dụ sử dụng Kafka Hook:
+Airflow thiết kế cho batch jobs, không phù hợp cho event-driven/streaming real-time như:
+- Consume Kafka message mỗi giây
+- Trigger DAG khi có dữ liệu đẩy tới
+- Xử lý continuous stream từ IoT, logs…
 
+---
+
+## 1. Tích hợp Apache Kafka với Airflow
+
+- Airflow xử lý batch từ Kafka mỗi X phút
+- Hoặc Airflow trigger DAG khi detect file/message
+
+Các cách tích hợp:
+| Cách                 | Mô tả                                               |
+| -------------------- | --------------------------------------------------- |
+| Kafka Consumer DAG   | DAG chạy mỗi X phút, dùng hook lấy batch từ Kafka   |
+| Sensor + Kafka       | Viết custom sensor, check Kafka message rồi trigger |
+| Kafka → HTTP         | Kafka push event đến API để trigger Airflow DAG     |
+| Kafka → DB → Airflow | Kafka dump vào DB, Airflow dùng ExternalTaskSensor  |
+
+Ví dụ sử dụng Kafka Hook:
 ```python
 from airflow.hooks.base_hook import BaseHook
 from kafka import KafkaConsumer
@@ -917,40 +731,49 @@ def read_kafka():
         print(msg.value)
 ```
 
-## 2️⃣ Ưu – Nhược khi tích hợp Kafka
+---
 
-| Ưu điểm                          | Nhược điểm                             |
-|----------------------------------|----------------------------------------|
-| ✅ Có thể xử lý event theo batch | ❌ Không phải real-time thực sự        |
-| ✅ Tận dụng hệ thống Airflow sẵn | ❌ Không scale tốt theo tốc độ Kafka   |
-| ✅ Dễ debug với web UI/log       | ❌ Complex nếu dùng sensor liên tục     |
+## 2. Ưu – Nhược khi tích hợp Kafka
 
-## 3️⃣ Giải pháp thay thế chuyên dụng streaming
+| Ưu điểm                         | Nhược điểm                          |
+| ------------------------------- | ----------------------------------- |
+| ✅ Có thể xử lý event theo batch | ❌ Không phải real-time thực sự      |
+| ✅ Tận dụng hệ thống Airflow sẵn | ❌ Không scale tốt theo tốc độ Kafka |
+| ✅ Dễ debug với web UI/log       | ❌ Complex nếu dùng sensor liên tục  |
 
-| Công cụ          | Ưu điểm                                      | Nhược điểm                    |
-|------------------|----------------------------------------------|-------------------------------|
-| **Apache Flink** | Stream + batch, cực kỳ mạnh với CEP         | Học hơi khó, JVM-based        |
-| Kafka Streams    | Nhẹ, chạy trong microservices Java           | Phụ thuộc Kafka platform      |
-| Spark Structured Streaming | Giao diện dễ, scale tốt              | Delay cao nếu xử lý nhỏ       |
-| NiFi             | GUI luồng dữ liệu trực quan, support Kafka   | Tính linh hoạt thấp hơn code  |
-| Prefect + Kafka  | Event-based DAG hỗ trợ native                | Mới hơn, ít plugin cloud hơn  |
+---
 
-## 4️⃣ Đề xuất
+## 3. Giải pháp thay thế chuyên dụng streaming
 
-| Mục đích                     | Nên dùng gì            |
-|------------------------------|------------------------|
-| ETL batch mỗi 15 phút        | Airflow + KafkaConsumer |
-| Trigger DAG theo file/data   | Airflow + REST API      |
-| Streaming real-time mạnh     | Kafka + Flink/Spark     |
-| DAG trigger theo event       | Prefect or Dagster      |
-| Tích hợp Kafka + tracking    | NiFi + Airflow / Flink  |
+| Công cụ                    | Ưu điểm                                    | Nhược điểm                   |
+| -------------------------- | ------------------------------------------ | ---------------------------- |
+| Apache Flink               | Stream + batch, mạnh với CEP               | Học hơi khó, JVM-based       |
+| Kafka Streams              | Nhẹ, chạy trong microservices Java         | Phụ thuộc Kafka platform     |
+| Spark Structured Streaming | Giao diện dễ, scale tốt                    | Delay cao nếu xử lý nhỏ      |
+| NiFi                       | GUI luồng dữ liệu trực quan, support Kafka | Tính linh hoạt thấp hơn code |
+| Prefect + Kafka            | Event-based DAG hỗ trợ native              | Mới hơn, ít plugin cloud hơn |
 
-## ✅ Tổng kết
+---
 
-Airflow vẫn có thể tương tác với Kafka nhưng không nên dùng cho streaming real-time.
-📌 Nếu workload của bạn yêu cầu < 5 phút/dữ liệu – dùng Prefect, Flink hoặc Spark Streaming là lựa chọn tốt hơn.
+## 4. Đề xuất
 
------------------------------------------------------------------------------
+| Mục đích                   | Nên dùng gì             |
+| -------------------------- | ----------------------- |
+| ETL batch mỗi 15 phút      | Airflow + KafkaConsumer |
+| Trigger DAG theo file/data | Airflow + REST API      |
+| Streaming real-time mạnh   | Kafka + Flink/Spark     |
+| DAG trigger theo event     | Prefect or Dagster      |
+| Tích hợp Kafka + tracking  | NiFi + Airflow/Flink    |
+
+---
+
+## Tổng kết
+
+Airflow có thể tương tác với Kafka nhưng không nên dùng cho streaming real-time.  
+Nếu workload yêu cầu < 5 phút/dữ liệu – dùng Prefect, Flink hoặc Spark Streaming là lựa chọn tốt hơn.
+
+---
+
 # 📂 Tài liệu tham khảo
 
 - [Apache Airflow Docs](https://airflow.apache.org/docs/)
@@ -959,4 +782,4 @@ Airflow vẫn có thể tương tác với Kafka nhưng không nên dùng cho st
 ---
 
 **✍️ Tác giả:** nptan2005  
-**📅 Generated:** 2025-04-19
+**📅 Created Date:** 2025-04-19
