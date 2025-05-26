@@ -23,17 +23,17 @@ x-airflow-common: &airflow-common
     AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
     AIRFLOW__WEBSERVER__RATELIMIT_STORAGE_URL: redis://redis:6379/0
     AIRFLOW__FAB__UPDATE_FAB_PERMS: True
-    AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: "false"  # Giúp scheduler không chạy DAG đã lùi quá nhiều (nếu không cần)
-    AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "30"  # Kiểm tra DAG mới sau mỗi 30s (giảm load so với mặc định là 5s)
-    AIRFLOW__CORE__PARALLELISM: "32"                 # Tổng số task song song có thể chạy, điều chỉnh theo tài nguyên
-    AIRFLOW__CELERY__WORKER_CONCURRENCY: "4"         # Số lượng task mỗi worker có thể chạy song song
-    AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "1"      # Tránh chạy nhiều DAG cùng lúc, tránh trùng lặp task
-    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"        # Hiện/Ẩn thông tin cấu hình khỏi UI, tăng bảo mật
-    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"     # Bắt buộc nếu bạn dùng reverse proxy (nginx)
-    AIRFLOW__WEBSERVER__COOKIE_SECURE: "True"        # Dùng HTTPS
+    AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: "false" # Giúp scheduler không chạy DAG đã lùi quá nhiều (nếu không cần)
+    AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "30" # Kiểm tra DAG mới sau mỗi 30s (giảm load so với mặc định là 5s)
+    AIRFLOW__CORE__PARALLELISM: "32" # Tổng số task song song có thể chạy, điều chỉnh theo tài nguyên
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: "4" # Số lượng task mỗi worker có thể chạy song song
+    AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "1" # Tránh chạy nhiều DAG cùng lúc, tránh trùng lặp task
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true" # Hiện/Ẩn thông tin cấu hình khỏi UI, tăng bảo mật
+    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True" # Bắt buộc nếu bạn dùng reverse proxy (nginx)
+    AIRFLOW__WEBSERVER__COOKIE_SECURE: "True" # Dùng HTTPS
     AIRFLOW__WEBSERVER__COOKIE_SAMESITE: "Lax"
     AIRFLOW__WEBSERVER__COOKIE_HTTPONLY: "True"
-    AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"     # Hoặc DEBUG khi cần gỡ lỗi
+    AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO" # Hoặc DEBUG khi cần gỡ lỗi
     # AIRFLOW__LOGGING__LOGGING_CONFIG_CLASS: airflow_local_settings.LOGGING_CONFIG
     AIRFLOW__SCHEDULER__USE_JOB_SCHEDULE: "True"
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: "false" #True: Cho phép sử dụng pickle (có thể gây rủi ro bảo mật nếu không kiểm soát được dữ liệu). / False: Sử dụng JSON để serialize (an toàn hơn). >>> =False để tăng cường bảo mật.
@@ -71,6 +71,8 @@ services:
       POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
       POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
       POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
+    ports:
+      - "5432:5432" # ✅ Expose cổng để truy cập từ bên ngoài
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     networks:
@@ -80,6 +82,16 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    entrypoint: [
+        "/bin/sh",
+        "-c",
+        "
+        until pg_isready -U airflow; do sleep 2; done;
+        echo 'Checking if schema task_flow exists...';
+        echo 'CREATE SCHEMA IF NOT EXISTS task_flow;' | psql -U airflow -d airflow
+        echo 'Schema task_flow is ready!'
+        ",
+      ]
   redis:
     image: redis:latest
     # container_name: airflow-redis
@@ -99,8 +111,8 @@ services:
   airflow-webserver:
     <<: *airflow-common
     # container_name: airflow-webserver
-    mem_limit: ${AIRFLOW_WEB_MEM}  #1500m
-    cpus: ${AIRFLOW_WEB_CPU}   #1.5
+    mem_limit: ${AIRFLOW_WEB_MEM} #1500m
+    cpus: ${AIRFLOW_WEB_CPU} #1.5
     command: webserver
     ports:
       - 8080:8080

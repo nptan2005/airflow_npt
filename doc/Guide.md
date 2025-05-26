@@ -148,6 +148,13 @@ docker compose build
 ```bash
 docker compose up -d
 ```
+>>> kiểm tra log sau khi build
+
+```bash
+docker-compose logs airflow-webserver
+docker-compose logs airflow-scheduler
+```
+
 
 ### C. Dừng container
 ```bash
@@ -257,8 +264,48 @@ docker logs airflow-project-airflow-webserver-1
 docker exec -it airflow-project-postgres-1 \
   psql -U airflow -d airflow -c '\l'
 ```
+Láy địa chỉ IP
 
+```bash
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container_postgres_name>
+```
+
+### access db
+
+```bash
+psql -U airflow -d airflow
+```
 ---
+
+## Tạo schema task_flow for plugin
+
+### 🔹 1. Kiểm tra xem schema đã được tạo chưa
+```sql
+SELECT schema_name FROM information_schema.schemata;
+```
+📌 Nếu task_flow không xuất hiện, có thể lệnh CREATE SCHEMA đã bị lỗi hoặc chưa được thực thi đúng.
+
+### 🔹 2. Kiểm tra quyền trên PostgreSQL
+Một số tài khoản PostgreSQL không có quyền tạo schema. Hãy kiểm tra bằng:
+```sql
+SHOW ROLE;
+```
+📌 Nếu bạn không phải là superuser, cần cấp quyền:
+```sql
+GRANT CREATE ON DATABASE airflow TO airflow;
+```
+Chạy lệnh:
+```sql
+CREATE SCHEMA task_flow;
+```
+
+### 🔹 3. Kiểm tra lỗi khi tạo schema
+Nếu schema không được tạo, hãy kiểm tra lỗi bằng:
+```sql
+SELECT * FROM pg_catalog.pg_namespace;
+```
+📌 Nếu có lỗi liên quan đến quyền hoặc xung đột với schema cũ, cần kiểm tra log PostgreSQL.
+
 
 ## Kiểm tra init
 

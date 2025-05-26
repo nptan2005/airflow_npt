@@ -100,6 +100,19 @@ environment:
 docker-compose restart airflow-webserver airflow-scheduler airflow-worker
 ```
 
+## 6. Restart các container Airflow để load lại cấu hình
+
+```bash
+docker-compose restart airflow-webserver airflow-scheduler airflow-worker
+```
+
+hoặc
+
+```bash
+docker-compose restart
+```
+
+
 ⸻
 
 ## Ghi nhớ:

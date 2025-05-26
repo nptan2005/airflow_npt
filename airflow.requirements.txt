@@ -15,21 +15,20 @@ pydantic
 # psycopg2-binary
 psycopg2
 openpyxl
-apache-airflow-providers-postgres
-cx_Oracle
-apache-airflow-providers-oracle
 pysftp
+cx_Oracle
+celery>=5.3.0
+apache-airflow-providers-postgres
+apache-airflow-providers-oracle
 apache-airflow-providers-smtp
 apache-airflow-providers-http
 apache-airflow-providers-sftp
-# apache-airflow-providers-email
+apache-airflow-providers-slack
 # apache-airflow-providers-aws
 # apache-airflow-providers-google
 apache-airflow-providers-docker
 apache-airflow-providers-databricks
-apache-airflow[celery]==2.10.5
-celery>=5.3.0
-apache-airflow-providers-redis>=2.0.0
-pydantic
-
+# apache-airflow[celery]==2.10.5
+# apache-airflow-providers-redis>=2.0.0
+apache-airflow-providers-redis
 

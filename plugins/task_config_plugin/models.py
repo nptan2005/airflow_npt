@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 
 class TaskDefinition(Base):
     __tablename__ = "custom_task_definitions"
+    __table_args__ = ({"extend_existing": True, "schema": "task_flow"},)
 
     # Core Identifiers
     id = Column(
@@ -88,9 +89,9 @@ class TaskDefinition(Base):
     # Relationships (for parent-child tasks)
     # children = relationship("TaskDefinition", backref=backref('parent', remote_side=[id]))
 
-    __table_args__ = (
-        {"schema": "airflow"},
-    )  # Ensures table is created in airflow schema
+    # __table_args__ = (
+    #     {"schema": "task_flow"},
+    # )  # Ensures table is created in airflow schema
 
     def __repr__(self):
         return f"<TaskDefinition id={self.id} name='{self.task_name}' type='{self.task_type}'>"

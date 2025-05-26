@@ -6,6 +6,7 @@ from sqlalchemy.sql import func
 
 class AppSetting(Base):
     __tablename__ = "custom_app_settings"
+    __table_args__ = ({"extend_existing": True, "schema": "task_flow"},)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     environment = Column(
@@ -16,10 +17,6 @@ class AppSetting(Base):
     description = Column(Text, nullable=True)
     created_at = Column(UtcDateTime, default=func.now())
     updated_at = Column(UtcDateTime, default=func.now(), onupdate=func.now())
-
-    __table_args__ = (
-        {"schema": "airflow", "extend_existing": True},
-    )  # ✅ Sửa lỗi đăng ký trùng bảng
 
     def __repr__(self):
         return f"<AppSetting environment='{self.environment}' key='{self.key}' value='{self.value[:50]}'>"

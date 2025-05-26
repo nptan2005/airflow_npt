@@ -93,4 +93,6 @@ USER root
 COPY scripts scripts
 RUN chmod +x scripts
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# copy file cấu hình log, đảm bảo ko lỗi module not found khi image chưa build xong.
+# COPY ./config/airflow_local_settings.py /opt/airflow/config/airflow_local_settings.py
 USER $AIRFLOW_UID
