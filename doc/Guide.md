@@ -229,7 +229,12 @@ docker builder prune -a
 ```
 ### ⛔️ Cảnh báo: Lệnh này sẽ xoá toàn bộ cache build của Docker, nên cần xác nhận bằng y.
 
+--
 
+Stop
+```bash
+docker stop $(docker ps -q)
+```
 ---
 
 ## 🧪 Kiểm tra trạng thái container & service

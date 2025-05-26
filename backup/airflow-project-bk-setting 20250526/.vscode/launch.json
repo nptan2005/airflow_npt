@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: Debug Airflow",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dags/export_to_excel_dag.py",  // Đường dẫn tới file DAG
+            "env": {
+                "AIRFLOW_HOME": "${workspaceFolder}/airflow_home",  // Đường dẫn tới Airflow Home
+                "PYTHONPATH": "${workspaceFolder}/plugins:${workspaceFolder}/dags"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}
