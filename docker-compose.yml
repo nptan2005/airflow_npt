@@ -82,16 +82,27 @@ services:
       interval: 5s
       retries: 5
     restart: always
-    entrypoint: [
-        "/bin/sh",
-        "-c",
-        "
-        until pg_isready -U airflow; do sleep 2; done;
-        echo 'Checking if schema task_flow exists...';
-        echo 'CREATE SCHEMA IF NOT EXISTS task_flow;' | psql -U airflow -d airflow
-        echo 'Schema task_flow is ready!'
-        ",
-      ]
+  init-db:
+    image: postgres:13
+    depends_on:
+      - postgres
+    entrypoint: >
+      bash -c "
+        until pg_isready -U airflow -h postgres; do sleep 2; done;
+        for f in /docker-entrypoint-initdb.d/*.sql; do
+          echo Running $f;
+          psql -U airflow -h postgres -d airflow -f $f;
+        done
+      "
+    environment:
+      POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
+    networks:
+      - airflow-network
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    restart: "no"
   redis:
     image: redis:latest
     # container_name: airflow-redis

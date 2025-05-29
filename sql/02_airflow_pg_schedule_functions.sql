@@ -1,4 +1,4 @@
--- Helper function to mimic Oracle's NVL
+SET search_path TO task_flow;
 CREATE OR REPLACE FUNCTION pg_nvl(input_val ANYELEMENT, default_val ANYELEMENT)
 RETURNS ANYELEMENT AS $$
 BEGIN
