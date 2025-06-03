@@ -89,15 +89,22 @@ services:
     entrypoint: >
       bash -c "
         until pg_isready -U airflow -h postgres; do sleep 2; done;
-        for f in /docker-entrypoint-initdb.d/*.sql; do
-          echo Running $f;
-          psql -U airflow -h postgres -d airflow -f $f;
+        shopt -s nullglob;
+        files=(/docker-entrypoint-initdb.d/*.sql);
+        if [ $${#files[@]} -eq 0 ]; then
+          echo 'No .sql files found!';
+          exit 0;
+        fi
+        for f in \"$${files[@]}\"; do
+          echo Running $$f;
+          psql -U airflow -h postgres -d airflow -f $$f;
         done
       "
     environment:
       POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
       POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
       POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
+      PGPASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
     networks:
       - airflow-network
     volumes:

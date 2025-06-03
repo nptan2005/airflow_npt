@@ -93,10 +93,18 @@ class DBExportTemplate(Base):
 
 class DBExportSheetConfig(Base):
     __tablename__ = "custom_export_sheet_configs"
-    __table_args__ = (
-        UniqueConstraint("template_name", name="uq_custom_export_templates"),
-        {"extend_existing": True, "schema": "task_flow"},
-    )
+    # __table_args__ = (
+    #     UniqueConstraint("template_name", name="uq_custom_export_templates"),
+    #     {"extend_existing": True, "schema": "task_flow"},
+    # )
+    __table_args__ = ({"extend_existing": True, "schema": "task_flow"},)
+
+    # __table_args__ = (
+    #     UniqueConstraint(
+    #         "export_template_id", "sheet_name_key", name="uq_export_sheet"
+    #     ),
+    #     {"extend_existing": True, "schema": "task_flow"},
+    # )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     export_template_id = Column(
