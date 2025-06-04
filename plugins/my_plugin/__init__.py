@@ -1,1 +1,0 @@
-from my_plugin.my_custom_plugin import CustomPlugin

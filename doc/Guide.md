@@ -111,6 +111,21 @@ $env:AIRFLOW_HOME="D:\WorkSpace\Python\airflow-project"
 
 ---
 
+## Tạo user admin cho airflow
+
+```bash
+docker compose exec airflow-webserver bash
+```
+
+```bash
+docker compose exec airflow-webserver flask fab create-admin \
+    --username admin \
+    --firstname Admin \
+    --lastname User \
+    --email nptan2005@gmail.com \
+    --password admin
+```
+
 ## Cấu hình tên images
 
 **Ví dụ:** airflow-nptan:1.0.0 trong `docker-compose.yml`
