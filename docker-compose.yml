@@ -131,7 +131,7 @@ services:
     # container_name: airflow-webserver
     mem_limit: ${AIRFLOW_WEB_MEM} #1500m
     cpus: ${AIRFLOW_WEB_CPU} #1.5
-    command: webserver
+    command: standalone # or api-server | standalone: Chạy Airflow ở chế độ "all-in-one" | api-server: Chỉ chạy Airflow API server (REST API). Không chạy web UI.
     ports:
       - 8080:8080
     networks:
