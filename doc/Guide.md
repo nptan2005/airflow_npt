@@ -92,6 +92,7 @@ $env:AIRFLOW_HOME="D:\WorkSpace\Python\airflow-project"
 - Username: `tanp`
 - Password: `Abcd1234`
 
+>>> airflow 3: acct default: Simple auth manager | Password for user 'admin': AGhxP5rbRc28W2Pk
 ---
 
 ## Kích hoạt môi trường ảo
