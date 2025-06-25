@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-airflow-chart.fullname" . }}-webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "my-airflow-chart.name" . }}
+      component: webserver
+  template:
+    metadata:
+      labels:
+        app: {{ include "my-airflow-chart.name" . }}
+        component: webserver
+    spec:
+      containers:
+        - name: webserver
+          image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+          command: ["webserver"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "my-airflow-chart.fullname" . }}-config
+          resources: {{ toYaml .Values.airflow.web.resources | nindent 12 }}
+          volumeMounts:
+            - name: dags
+              mountPath: /opt/airflow/dags
+            - name: logs
+              mountPath: /opt/airflow/logs
+            - name: plugins
+              mountPath: /opt/airflow/plugins
+            - name: config
+              mountPath: /opt/airflow/config
+      volumes:
+        - name: dags
+          persistentVolumeClaim:
+            claimName: airflow-dags-pvc
+        - name: logs
+          persistentVolumeClaim:
+            claimName: airflow-logs-pvc
+        - name: plugins
+          persistentVolumeClaim:
+            claimName: airflow-plugins-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: airflow-config-pvc

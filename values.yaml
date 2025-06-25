@@ -1,0 +1,126 @@
+airflow:
+  image:
+    repository: apache/airflow
+    tag: 3.0.1-python3.11
+  executor: CeleryExecutor
+  config:
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__CORE__FERNET_KEY: C1Cg8QaV6rUzSZlQ9OCAFHVv-IWMBQuSvnfcMfnuEAg=
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__WEBSERVER__AUTH_MANAGER: airflow.www.security.FabAuthManager
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+    AIRFLOW__WEBSERVER__WEB_SERVER_TIMEOUT: "300"
+    AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: "false"
+    AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL: "30"
+    AIRFLOW__CORE__PARALLELISM: "32"
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: "4"
+    AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "1"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+    AIRFLOW__WEBSERVER__COOKIE_SECURE: "True"
+    AIRFLOW__WEBSERVER__COOKIE_SAMESITE: "Lax"
+    AIRFLOW__WEBSERVER__COOKIE_HTTPONLY: "True"
+    AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
+    AIRFLOW__SCHEDULER__USE_JOB_SCHEDULE: "True"
+    AIRFLOW__CORE__ENABLE_XCOM_PICKLING: "false"
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+    AIRFLOW__CORE__PLUGINS_FOLDER: /opt/airflow/plugins
+    PYTHONPATH: /opt/airflow/plugins:/opt/airflow/dags:/opt/airflow/modules:/opt/airflow/config:/opt/airflow/scripts
+    CONFIG_PATH: /opt/airflow/config
+    LOG_PATH: /opt/airflow/logs
+    BIN_PATH: /opt/airflow/bin
+
+  web:
+    defaultUser:
+      enabled: true
+      username: admin
+      password: admin
+      firstName: Tan
+      lastName: Nguyen
+      email: nptan2005@gmail.com
+      role: Admin
+    resources:
+      requests:
+        cpu: "2"
+        memory: "2Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+
+  scheduler:
+    resources:
+      requests:
+        cpu: "1.5"
+        memory: "2Gi"
+      limits:
+        cpu: "1.5"
+        memory: "3Gi"
+
+  worker:
+    resources:
+      requests:
+        cpu: "2"
+        memory: "2Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+
+  flower:
+    enabled: true
+    resources:
+      requests:
+        cpu: "0.5"
+        memory: "512Mi"
+      limits:
+        cpu: "0.5"
+        memory: "512Mi"
+
+dags:
+  persistence:
+    enabled: true
+    existingClaim: airflow-dags-pvc
+
+logs:
+  persistence:
+    enabled: true
+    existingClaim: airflow-logs-pvc
+
+extraVolumeMounts:
+  - name: plugins
+    mountPath: /opt/airflow/plugins
+  - name: config
+    mountPath: /opt/airflow/config
+extraVolumes:
+  - name: plugins
+    persistentVolumeClaim:
+      claimName: airflow-plugins-pvc
+  - name: config
+    persistentVolumeClaim:
+      claimName: airflow-config-pvc
+
+postgresql:
+  enabled: true
+  auth:
+    username: airflow
+    password: airflow
+    database: airflow
+  resources:
+    requests:
+      cpu: "1"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+redis:
+  enabled: true
+  resources:
+    requests:
+      cpu: "0.5"
+      memory: "256Mi"
+    limits:
+      cpu: "0.5"
+      memory: "256Mi"

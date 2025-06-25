@@ -12,7 +12,7 @@ pyiso8583
 xlsxwriter
 # pathlib
 pydantic
-# psycopg2-binary
+psycopg2-binary
 psycopg2
 openpyxl
 pysftp
