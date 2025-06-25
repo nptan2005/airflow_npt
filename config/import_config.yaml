@@ -259,6 +259,7 @@ import_template:
       - "POSTING_STATUS"
       - "TRANS_CONDITION"
       - "CONTRACT_NAME"
+      - "COUNTRY"
       - "MPGSORDERID"
       - "CYBERSORDERID"
       - "CYBERSPURCHID"
@@ -292,6 +293,7 @@ import_template:
       POSTING_STATUS: "STATUS"
       TRANS_CONDITION: "TRANS_CONDITION"
       CONTRACT_NAME: "CONTRACT_NAME"
+      COUNTRY: "COUNTRY"
       MPGSORDERID: "ORDER_ID"
       CYBERSORDERID: "CYBERS_ORDER_ID"
       CYBERSPURCHID: "CYBERS_PURCH_ID"
@@ -414,6 +416,138 @@ import_template:
     procedure_name: ""
     external_process: ""
     column_mapping: {}
+  SOUND_BOX_DEVICE_FEE:
+    header:
+      - "ID"
+      - "Serial No"
+      - "Merchant Name"
+      - "Merchant Active Date"
+      - "Status"
+      - "Service Type"
+      - "Device Registration"
+      - "Device Hand Over Status"
+      - "Account Number"
+      - "QR Account Nunber"
+      - "GL Account Fee"
+      - "VAT Account Number"
+      - "Fee Percent"
+      - "Total Fee Amount"
+      - "Fee Amount"
+      - "VAT Amount"
+      - "Branch Code"
+      - "Branch Name"
+      - "POST Fee Type"
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: "SFTP_ACQ_POS"
+    sftp_move: true
+    start_row: 2
+    end_row: 0
+    start_col: 1
+    end_col: 0
+    is_read_to_empty_row: true
+    table_name: "ACQ_POS_IMPORT_TMP"
+    is_truncate_tmp_table: true
+    procedure_name: "bvbpks_Acq_Pos_Api.Pr_Imp_sound_box_fee"
+    external_process: ""
+    column_mapping:
+      "ID": "Field_01_20" 
+      "Serial No": "Field_01_50" 
+      "Merchant Name": "Field_01_100" 
+      "Merchant Active Date": "Field_01_15" 
+      "Status": "Field_02_15" 
+      "Service Type": "Field_03_15" 
+      "Device Registration": "Field_04_15" 
+      "Device Hand Over Status": "Field_05_15" 
+      "Account Number": "Field_02_20" 
+      "QR Account Nunber": "Field_02_50" 
+      "GL Account Fee": "Field_03_20" 
+      "VAT Account Number": "Field_04_20" 
+      "Fee Percent": "Field_06_15" 
+      "Total Fee Amount": "Field_05_20" 
+      "Fee Amount": "Field_06_20" 
+      "VAT Amount": "Field_07_20" 
+      "Branch Code": "Field_07_15" 
+      "Branch Name": "Field_02_100" 
+      "POST Fee Type": "Field_08_15" 
+  ACCT_NO_SHIFT_WORKING:
+    header:
+      - "ACCOUNT_NUMBER"
+      - "ACTIVE"
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: "SFTP_ACQ_POS"
+    sftp_move: true
+    start_row: 2
+    end_row: 0
+    start_col: 1
+    end_col: 0
+    is_read_to_empty_row: true
+    table_name: "ACQ_POS_IMPORT_TMP"
+    is_truncate_tmp_table: true
+    procedure_name: "bvbpks_Acq_Pos_Api.Pr_Imp_acct_no_shift_working"
+    external_process: ""
+    column_mapping:
+      "ACCOUNT_NUMBER": "Field_01_100"
+      "ACTIVE": "Field_01_15"
+  ATOM_QR_FEE:
+    header:
+      - "Invoice ID"
+      - "Merchant Name"
+      - "Shop Name"
+      - "MCC"
+      - "TID"
+      - "MID"
+      - "Account Number"
+      - "Shop QR"
+      - "QR Account"
+      - "Transaction Date"
+      - "Transaction Amount"
+      - "Description"
+      - "Status"
+      - "Fee Percent"
+      - "Fee Amount"
+      - "VAT Amount"
+      - "Credit Amount"
+      - "Credit Status"
+      - "Account Name"
+      - "Service Type"
+      - "QR Type"
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: "SFTP_ACQ_POS"
+    sftp_move: true
+    start_row: 2
+    end_row: 0
+    start_col: 1
+    end_col: 0
+    is_read_to_empty_row: true
+    table_name: "dw.ACQ_POS_IMPORT_TMP"
+    is_truncate_tmp_table: true
+    procedure_name: "bvbpks_Acq_Pos_Api.Pr_Imp_sound_box_fee"
+    external_process: ""
+    column_mapping:
+      "Invoice ID": "Field_01_50"
+      "Merchant Name": "Field_01_100"
+      "Shop Name": "Field_01_250"
+      "MCC": "Field_01_15"
+      "TID": "Field_02_15"
+      "MID": "Field_03_15"
+      "Account Number": "Field_02_50"
+      "Shop QR": "Field_02_100"
+      "QR Account": "Field_03_100"
+      "Transaction Date": "Field_01_20"
+      "Transaction Amount": "Field_02_20"
+      "Description": "Field_01_500"
+      "Status": "Field_03_20"
+      "Fee Percent": "Field_04_15"
+      "Fee Amount": "Field_04_20"
+      "VAT Amount": "Field_05_20"
+      "Credit Amount": "Field_06_20"
+      "Credit Status": "Field_07_20"
+      "Account Name": "Field_02_100"
+      "Service Type": "Field_08_20"
+      "QR Type": "Field_09_20"
   DEFAULT:
     header:
     file_extension: "xlsx"

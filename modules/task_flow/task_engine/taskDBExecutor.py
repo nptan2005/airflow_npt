@@ -26,6 +26,7 @@ class TaskDBExecutor:
                 with OracleConn(self.task.connection_string, self.task.task_time_out) as db:
                     for script in self.task.script:
                         db.execute_procedure(script)
+                        self.logger.info(f"Execute '{script}'")
                 return True, '', None
             except Exception as e:
                 note  = f'[{self.__class__.__name__}]'
@@ -49,6 +50,7 @@ class TaskDBExecutor:
         try:
             with OracleConn(self.task.connection_string, self.task.task_time_out) as db:
                 out_results = db.execute_procedure_param(procedure,params,out_params_type)
+                self.logger.info(f"Execute '{procedure}', result = {out_results}")
             return True,'',None,out_results
         except Exception as e:
             note  = f'[{self.__class__.__name__}]'

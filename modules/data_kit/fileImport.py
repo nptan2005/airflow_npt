@@ -108,41 +108,56 @@ class FileImport:
             
         }
         
+        duplicated_cols = dfImp.columns[dfImp.columns.duplicated()]
+        if not duplicated_cols.empty:
+            raise ValueError(f"Found duplicate columns in input file: {duplicated_cols.tolist()}")
+
         for index, row in df_schema.iterrows():
             column = row['COLUMN_NAME']
-            if column not in dfImp.columns:
+            if pd.isna(column) or column not in dfImp.columns:
                 continue
 
             dbDataType = row['DATA_TYPE']
             max_length = int(row['MAX_LENGTH']) if not pd.isna(row['MAX_LENGTH']) else None
             precision = int(row['PRECISION']) if not pd.isna(row['PRECISION']) else None
             scale = int(row['SCALE']) if not pd.isna(row['SCALE']) else None
-            dfColumnDtype = dfImp[column].dtype
-
-            # Xác định dtype_category của DataFrame
-            if pd.api.types.is_numeric_dtype(dfColumnDtype) or pd.api.types.is_float_dtype(dfColumnDtype):
-                dtype_category = 'numeric'
-            elif pd.api.types.is_datetime64_any_dtype(dfColumnDtype):
-                dtype_category = 'datetime64'
-            elif pd.api.types.is_bool_dtype(dfColumnDtype):
-                dtype_category = 'bool'
-            else:
-                dtype_category = 'str'
-
-            # Tạo khóa (key) để tìm hàm trong dtype_conversion_map
-            key = (dbDataType, dtype_category)
-
-            # Lấy hàm từ dtype_conversion_map, nếu không có thì trả về None
-            conversion_func = dtype_conversion_map.get(key,None)
-
             try:
+                dfColumn = dfImp[column] 
+                if not isinstance(dfColumn, pd.Series):
+                    raise TypeError(f"Index {index}, {column} return Type {type(dfColumn)}, not Series. Please check duplicate config mapping field.")
+                dfColumnDtype = dfColumn.dtype
+
+                # Xác định dtype_category của DataFrame
+                if pd.api.types.is_numeric_dtype(dfColumnDtype) or pd.api.types.is_float_dtype(dfColumnDtype):
+                    dtype_category = 'numeric'
+                elif pd.api.types.is_datetime64_any_dtype(dfColumnDtype):
+                    dtype_category = 'datetime64'
+                elif pd.api.types.is_bool_dtype(dfColumnDtype):
+                    dtype_category = 'bool'
+                else:
+                    dtype_category = 'str'
+                    
+
+                # Tạo khóa (key) để tìm hàm trong dtype_conversion_map
+                key = (dbDataType, dtype_category)
+
+                # Lấy hàm từ dtype_conversion_map, nếu không có thì trả về None
+                conversion_func = dtype_conversion_map.get(key,None)
+
+            
                 if conversion_func:
                     dfImp[column] = conversion_func(dfImp[column], precision, scale,max_length)
                 else:
                     dfImp[column] = self.__convert_dtype(dfImp[column], dbDataType)
                 
             except Exception as e:
-                raise ValueError(f'Error converting row {index}, column {column} [{dfColumnDtype},{dbDataType}]: {e}')
+                raise ValueError(
+                    f"Error converting row  {index}, column {column}. "
+                    f"DataType: dfColumnDtype={dfColumnDtype if 'dfColumnDtype' in locals() else 'N/A'}, "
+                    f"dbDataType={dbDataType}, "
+                    f"dtype_category={dtype_category if 'dtype_category' in locals() else 'N/A'}.\n"
+                    f"Error Details: {e}"
+                )
 
         return dfImp
     # end correctDataType
@@ -620,9 +635,5 @@ class FileImport:
             rs += f"{sql1} ({col}) VALUES ('{value}');"
         
         return rs
-
-    
-
-        
         
 

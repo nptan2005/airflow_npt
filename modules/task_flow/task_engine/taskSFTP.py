@@ -158,6 +158,9 @@ class TaskSFTP:
 
     def archive_file(self,file_name:str) -> str:
         note_archive = None
+        if not self._destination_archive:
+            self._destination_archive = os.path.join('Archived','Archived_SFTP')
+        self.logger.info(f'Archive path = {self._destination_archive}, file Name = {file_name}')
         with FileArchiver(file_name, self._destination_archive) as archiver:
             note_archive = archiver.archive_file
         return note_archive

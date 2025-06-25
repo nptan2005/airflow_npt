@@ -148,7 +148,7 @@ class TaskExporter:
                     if self.task.is_attachment:
                         self._attach_file = f'{self._file_name}.{writer.file_type}'
         except Exception as e:
-            note += 'Export process encountered an error'
+            note += f'Export process encountered an error'
             self.logger.exception(f'Export process encountered an error, {e}')
 
         return is_completed, note, error

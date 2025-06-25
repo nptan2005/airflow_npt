@@ -93,6 +93,8 @@ class TaskImporter:
                 if df_imp is None or len(df_imp) == 0:
                     self.logger.info(f"Read file '{self.task.src_file_name}' is Error or Empty")
                     return is_completed, note, error
+                else:
+                    self.logger.info(f"File = '{self.task.src_file_name}', Num of Import '{len(df_imp)}'")
                 # step 2: check transform data from config external class
                 if file_import.template.external_process:
                     is_completed, note_ext, error, df_outcome = self.exe_transform(file_import.template.external_process, df_imp)
@@ -110,10 +112,12 @@ class TaskImporter:
                     # step 3.2: check config truncate table
                     if file_import.template.is_truncate_tmp_table:
                         db.truncate_table(file_import.template.table_name)
+                        self.logger.info(f"Truncate Temp Table '{file_import.template.table_name}'")
 
                     file_id = None
                     # step 3.3: insert log and get file id from db,app_service_config
                     file_id = db.import_log(app_service_config.import_log_prc, [self.task.config_key_name, file_import.fileName])
+                    self.logger.info(f"Generate File ID = '{file_id}'")
                     if db.err_msg:
                         self.logger.info(f'{db.err_msg}')
                     # step 3.4: check and assign file_id to dfIm
@@ -148,6 +152,7 @@ class TaskImporter:
                        self.logger.info( f'{db.err_msg}')
                     # step 5.2: check and process database
                     if file_import.template.procedure_name:
+                        self.logger.info(f'Execute Procedure {file_import.template.procedure_name}')
                         db.execute_procedure(file_import.template.procedure_name)
                         if db.err_msg:
                             self.logger.info(f'{db.err_msg}')
@@ -162,16 +167,20 @@ class TaskImporter:
                     note_archive = self.archive_file(file_import.fileName)
                     if note_archive:
                         self.logger.info(note_archive)
+                    self.logger.info(f"Finish Import file '{file_import.fileName}'")
 
         except Exception as e:
-            note += f'doImport is Error'
-            self.logger.exception(f'import error {e}')
+            note += f'doImport file {file_import.fileName} is Error'
+            self.logger.exception(f'Import file {file_import.fileName} is error {e}')
 
         return is_completed, note, error
     
     def archive_file(self,file_name:str) -> str:
         note_archive = None
+        if not self._destination_archive:
+            self._destination_archive = os.path.join('Archived','Archived_Import')
         archive_folder = os.path.join(self._destination_archive, self.task.src_folder_name) if self.task.src_folder_name else self._destination_archive
+        self.logger.info(f'Archive path = {archive_folder}, file Name = {file_name}')
         with FileArchiver(file_name, archive_folder) as archiver:
             note_archive = archiver.archive_file
         return note_archive

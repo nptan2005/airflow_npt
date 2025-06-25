@@ -79,6 +79,16 @@ export_template:
           "KET QUA": "Trạng thái hạch toán"
           "FC_RESULTDESC": "Mô tả lỗi"
           "SO LAN HT": "Số lần hạch toán"
+      DUPLICATE:
+        is_header: true
+        sheet_title_name: "BÁO CÁO IMPORT TRÙNG (KHÔNG TRÙNG - SHEET KHÔNG CÓ DỮ LIỆU)"
+        sheet_name: "DUPLICATE"
+        is_format: false
+        column_mapping:
+          "acq_bank_code": "Mã ACQ Bank"
+          "retrieval_ref_no": "Số tham chiếu (F37)"
+          "txn_id": "Transaction ID"
+          "CN": "Số lượng trùng"
   ATOM_UPDATE_ACCOUNT_STATUS:
     file_extension: "xlsx"
     separate: "|"
@@ -99,6 +109,73 @@ export_template:
           "RETRIEVAL_REF_NO": "Số tham chiếu (F37)"
           "REQUEST_AMOUNT": "Số tiền GD"
           "POSTING_DATE": "Ngày báo có"
+  ACQ_SOUND_BOX_FEE:
+    file_extension: "xlsx"
+    separate: "|"
+    sftp_conn: "SFTP_ACQ_POS"
+    sftp_move: true
+    sheets:
+      SOUND_BOX:
+        is_header: true
+        sheet_title_name: "BÁO CÁO THU PHÍ SOUND BOX (TỔNG HỢP THEO HẠCH TOÁN)"
+        sheet_name: "SOUND_BOX"
+        is_format: true
+        column_mapping:
+          "STT": "STT"
+          "IMPORT_DATE": "Ngày Import"
+          "MERCHANT_NAME": "Tên Merchant"
+          "BRANCH_CODE": "Mã ĐVKD"
+          "BRANCH_NAME": "Tên ĐVKD"
+          "ACCT_NUMBER": "Số tài khoản Merchant"
+          "FEE_GL_ACCT": "GL Thu phí"
+          "FEE_VAT_ACCT": "Tài khoản VAT"
+          "FEE_AMOUNT": "Phí"
+          "FEE_VAT_AMT": "VAT"
+          "FEE_TOTAL_AMT": "Tổng Nợ Merchant"
+          "RE_POSTING_NUM": "Số ngày thu lại"
+          "RRN": "RRN"
+          "POSTING_DATE": "Ngày post fee"
+          "FIRST_FEE_DATE": "Ngày xử lí lần đầu"
+          "FC_RESULTCODE": "Mã HT"
+          "FC_RESULTDESC": "Diễn giải HT"
+          "FC_REF": "FC REF"
+          "RUN_NUMBER": "Retry"
+      SOUND_BOX_DETAIL:
+        is_header: true
+        sheet_title_name: "BÁO CÁO THU PHÍ SOUND BOX (CHI TIẾT THEO THIẾT BỊ)"
+        sheet_name: "SOUND_BOX_DETAIL"
+        is_format: true
+        column_mapping:
+          "STT": "STT"
+          "IMPORT_DATE": "Ngày Import"
+          "MERCHANT_NAME": "Tên Merchant"
+          "SERIAL_NO": "Serial No"
+          "SERVICE_TYPE": "Loại dịch vụ "
+          "SERVICE_STATUS": "Trạng thái"
+          "DEVICE_REG_STATUS": "Đăng ký thiết bị"
+          "HAND_OVER_STATUS": "Trạng thái giao thiết bị"
+          "DIGI_ACT_DATE": "Ngày kích hoạt Digistore Merchant"
+          "BRANCH_CODE": "Mã ĐVKD"
+          "BRANCH_NAME": "Tên ĐVKD"
+          "ACCT_NUMBER": "Số tài khoản Merchant"
+          "FEE_AMOUNT": "Phí"
+          "FEE_VAT_AMT": "VAT"
+          "FEE_TOTAL_AMT": "Tổng Nợ Merchant"
+          "RRN": "RRN"
+          "POSTING_DATE": "Ngày post fee"
+          "FIRST_FEE_DATE": "Ngày xử lí lần đầu"
+          "FC_RESULTCODE": "Mã HT"
+          "FC_RESULTDESC": "Diễn giải HT"
+          "FC_REF": "FC REF"
+          "RUN_NUMBER": "Retry"
+      DUPLICATE:
+        is_header: true
+        sheet_title_name: "BÁO CÁO IMPORT TRÙNG (KHÔNG TRÙNG - SHEET KHÔNG CÓ DỮ LIỆU)"
+        sheet_name: "DUPLICATE"
+        is_format: false
+        column_mapping:
+          "SERIAL_NO": "Serial Number"
+          "CN": "Số lượng trùng"
   DEFAULT:
     file_extension: "xlsx"
     separate: "|"
